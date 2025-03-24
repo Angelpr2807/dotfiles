@@ -1,0 +1,96 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Created by newuser for 5.9
+source ~/powerlevel10k/powerlevel10k.zsh-theme
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Pluggins
+source ~/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh-sudo/sudo.plugin.zsh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# zsh-syntax-highlighting customize colors
+typeset -A ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_STYLES[path]='fg=#57C7FF'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=#5ff5be'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=#5ff5be'
+ZSH_HIGHLIGHT_STYLES[command]='fg=#5ff5be'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#ff949d'
+ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=#FF6AC1'
+ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter]='fg=#FF6AC1'
+
+export VISUAL='nvim';
+export EDITOR='nvim';
+
+# Alias
+alias ls='/bin/lsd'
+alias cat='/bin/bat'
+alias l='ls -l'
+alias lla='ls -la'
+alias lRa='ls -lRa'
+alias grep='grep --color'
+alias chrome='google-chrome-stable &> /dev/null & disown'
+alias firefox='firejail firefox &> /dev/null & disown'
+
+# third party
+alias john="$HOME/Downloads/john/run/john"
+alias sublist3r='python /usr/share/Sublist3r/sublist3r.py'
+alias asnlookup='python /usr/share/Asnlookup/asnlookup.py'
+alias bucketeer='/usr/share/teh_s3_bucketeers/bucketeer.sh'
+
+# custom
+alias setTarget="$HOME/.config/polybar/setTarget.sh"
+
+# Path
+export PATH="/root/.local/bin:/snap/bin:/usr/sandbox/:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games/usr/sbin:/sbin:/usr/local/games:/usr/games:${PATH}"
+export PATH="$PATH:/$HOME/Downloads/john/run"
+
+#python pip
+export PATH="$PATH:$HOME/.local/lib/python3.11/site-packages"
+# go
+export PATH="$PATH:$HOME/go/bin"
+# ruby - gems
+export PATH="$PATH:$HOME/.local/share/gem/ruby/3.3.0/bin"
+#rust
+source $HOME/.cargo/env
+
+# Enable special keys
+bindkey "^[[H" beginning-of-line
+bindkey "^[[F" end-of-line
+bindkey "^[[3~" delete-char
+bindkey "^[[1;3C" forward-word
+bindkey "^[[1;3D" backward-word
+
+# History
+HISTSIZE=1000
+SAVEHIST=1000
+HISTFILE=~/.zsh_history
+
+setopt histignorealldups sharehistory
+
+# Man pages colorized
+export MANROFFOPT="-c"
+export MANPAGER="sh -c 'col -xb | bat -pl man'"
+
+mkt (){
+    mkdir nmap content exploits;
+    echo -e "\t=> Directory structure successfully created.";
+    tree --noreport || ls;
+}
+
+cpyip (){
+    IP=$(ip a | grep -A 1 'link/ether' | grep -oP "(\d{1,3}\.){3}\d{1,3}" | head -1)
+    echo "$IP" | xclip -r -sel clip1
+}
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

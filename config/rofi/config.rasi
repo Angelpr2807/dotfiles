@@ -1,0 +1,165 @@
+configuration {
+
+  modes: "window,drun,run";
+  combi-modes: "window,drun,run,filebrowser";
+  font: "VictorMono Medium 15";
+  show-icons: true;
+  drun-display-format: "{icon} {name}";
+  combi-modes: "window,drun,run,filebrowser";
+  combi-display-format: "{text}";
+  display-combi: "";
+  display-run: "";
+  display-drun: "󰇖";
+  display-window: "󰇄";
+  window-icon-theme: "Zafiro-Icons-Dark";
+  icon-theme: "Zafiro-Icons-Dark";
+  disable-history: true;
+  sidebar-mode: true;
+
+  timeout {
+      action: "kb-cancel";
+      delay:  0;
+  }
+  filebrowser {
+      directories-first: true;
+      sorting-method:    "name";
+  }
+}
+
+@theme "/dev/null"
+
+* {
+    background:        #17162A;
+    foreground:        #fffffe;
+    red-color:	       #df6c75;
+    blue-color:        #61afef;
+    text-color:        @foreground;
+    active-background: @blue-color;
+    active-text:       @background;
+    white-color:       #fff;
+    gray-color:        #2f333c;
+    gray-light:        #afb0b4;
+    yellow-color:      #f0c674;
+    green-color:      #8CB369;
+}
+
+window {
+    width: calc(200px + 15%);
+    height: 65%;
+    padding: 20;
+    background-color: @background;
+    border: 2;
+    border-radius: 16;
+}
+
+mainbox {
+    padding: 0;
+    background-color: @background;
+}
+
+inputbar {
+    children: [prompt, entry];
+    background-color: @gray-color;
+    text-color: @background;
+    padding: 2 5;
+    border-radius: 24;
+  }
+
+prompt {
+    background-color: @yellow-color;
+    text-color: @gray-color;
+    font: "hack nerd font 14";
+    padding: 10 20 8 14;
+    border-radius: 50;
+    margin: 4;
+  }
+
+entry {
+    text-color: @gray-light;
+    background-color: @gray-color;
+    padding: 10 20;
+    margin: 4 0;
+    border-radius: 10;
+    placeholder: "Search...";
+    cursor: pointer;
+  }
+
+message {
+    margin: -2 0 0 0;
+    padding: 2;
+  }
+
+textbox {
+    margin: -2;
+    padding: 16;
+    background-color: @background;
+    text-color: #ffe482;
+  }
+
+listview {
+    background-color: @background;
+    scrollbar: true;
+    lines: 7;
+    margin: -2;
+    padding: 10 2 2;
+  }
+
+scrollbar {
+   background-color: #777;
+   handle-color: @white-color;
+   handle-width: 10;
+  }
+
+element {
+    background-color: @background;
+    border-radius: 10;
+    padding: 5 10;
+    margin: 0 10 0 0;
+  }
+
+element-icon {
+    background-color: inherit;
+    size: 45px;
+  }
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+    vertical-align: 0.5;
+    padding: 0 10;
+  }
+
+element.selected {
+    background-color: @active-background;
+    text-color: @active-text;
+  }
+
+element.selected.active {
+    background-color: @blue-color;
+    text-color: @white-color;
+  }
+
+element.active{
+    background-color: @red-color;
+    text-color: @white-color;
+  }
+
+mode-switcher {
+    background-color: @background;
+    padding: 10 0;
+    margin: 0 -10;
+  }
+
+button {
+    background-color: @background;
+    text-color: @text-color;
+    font: "hack nerd font 20";
+    border-radius: 10;
+    margin: 0 10;
+    padding: 10 0;
+
+  }
+
+button.selected{
+        background-color: @green-color;
+  }
