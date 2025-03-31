@@ -2,8 +2,8 @@
 
 This is my personal configuration for BSPWM, and I have two variants.
 
-1. Normal: A nice desktop and minimal workflow setup. It's based on gh0stzk's dotfiles with slight modifications to the z0mbi3 and cristina themes to work with two monitors and avoid certain conflicts.
-2. Black: Custom desktop and scripts for hacking and installing blackarch packages for penetration testing.
+1. Normal - rice: A nice desktop and minimal workflow setup. It's based on gh0stzk's dotfiles with slight modifications to the z0mbi3 and cristina themes to work with my own configurations and settings.
+2. Black - minimal: Custom desktop and scripts for hacking and installing blackarch packages for penetration testing.
 
 You can configure these files however you like. I'll post pictures of these variants soon.
 
@@ -29,3 +29,5 @@ I use the neovim text editor with [NvChad](https://nvchad.com/) settings. I modi
 
 > [!Warning]
 > For virtual machines, both modes have issues with the Picom settings. I haven't been able to find a solution, so in this case, simply removing the rounded edges and opacity works for me.
+>
+> Commit "e3540c359" belongs to an older version of rice bspwm, so it doesn't work very well and breaks. Use the current version if you want or make a pull request to improve the customization of dotfiles.

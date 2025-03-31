@@ -1,6 +1,7 @@
 #!/bin/bash
 
 VM=false
+BSPWM="rice"     # Select between "rite" and "minimal" -> Rice is variant of gh0stzk, minimal is similar to s4vitar dotfiles.
 BLACK=false
 
 ping -c 1 google.com &> /dev/null || (echo -e "[!] You don't have internet access. Check your connection" && exit 1)
@@ -36,13 +37,14 @@ git clone https://github.com/NvChad/starter ~/.config/nvim && nvim
 cd ~/Downloads
 git clone http://github.com/Angelpr2807/dotfiles.git
 
-if [[ "$BLACK" = true ]]; then   
+if [[ "$BSPWM" = "minimal" ]]; then   
     cd ~/Downloads/dotfiles
     mv .* ~/
     mv ~/.zshrc-hack ~/.zshrc
     cp bspwm-hack/* ~/.config/
     cp -r nvim/lua/* ~/.config/nvim/lua/
     rm -rf ./nvim
+    cp -r dunst ~/.config/dunst
     sudo mkdir /usr/share/zsh-sudo/
     cd /usr/share/zsh-sudo
     sudo wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh
@@ -62,15 +64,18 @@ else
     cp -r bspwm-rice/* ~/.config/bspwm
 fi
 
-cp -r flameshot kitty neofetch ranger rofi ~/.config
+cp -r kitty neofetch ranger rofi ~/.config
 rm -rf ~/Downloads/dotfiles
 
 # term plugins
 cd
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
-git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
+PLUGINS="/usr/share/zsh/plugins/"
+sudo mkdir -p 
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${PLUGINS}/zsh-syntax-highlighting" 
+git clone https://github.com/zsh-users/zsh-autosuggestions "${PLUGINS}/zsh-autosuggestions"
+git clone --depth 1 https://github.com/junegunn/fzf.git "${PLUGINS}/.fzf"
+
+${PLUGINS}/.fzf/install
 
 # fonst and icons
 cd ~/Downloads
@@ -123,11 +128,7 @@ if [[ "$BLACK" = true ]]; then
 fi
 
 # Terminal plugins for root
-sudo cd /root
-sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
-sudo git clone https://github.com/zsh-users/zsh-autosuggestions /root/.zsh/zsh-autosuggestions
-sudo git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
-sudo /root/.fzf/install
+sudo ${PLUGINS}/.fzf/install
 
 # NvChad installation
 sudo rm -rf /root/.config/nvim

@@ -12,8 +12,9 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Pluggins
-source ~/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+PLUGINS="/usr/share/zsh/plugins"
+source ${PLUGINS}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ${PLUGINS}.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh-sudo/sudo.plugin.zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -54,11 +55,10 @@ alias setTarget="$HOME/.config/polybar/setTarget.sh"
 export PATH="/root/.local/bin:/snap/bin:/usr/sandbox/:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games/usr/sbin:/sbin:/usr/local/games:/usr/games:${PATH}"
 export PATH="$PATH:/$HOME/Downloads/john/run"
 
-#python pip
-export PATH="$PATH:$HOME/.local/lib/python3.11/site-packages"
 # go
 export PATH="$PATH:$HOME/go/bin"
 # ruby - gems
+# change version
 export PATH="$PATH:$HOME/.local/share/gem/ruby/3.3.0/bin"
 #rust
 source $HOME/.cargo/env

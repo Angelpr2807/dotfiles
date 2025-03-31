@@ -3,6 +3,7 @@
 # Variables
 DISK="/dev/sda"          # lsblk -a
 LAPTOP=false             # special instalation for laptops
+SWAP=false               # Enable swap
 LANG="en_US.UTF-8"       # /etc/locale.gen
 KEYMAP="dvorak"	         # list keymaps with "localectl list-keymaps"
 NAME="arch"              # Hostname
@@ -28,7 +29,7 @@ TYPE="msdos"
 
 if [[ -d /sys/firmware/efi ]]; then
     EFI="/efi"
-    TYPE="gtp"
+    TYPE="gpt"
 fi
 
 # --------------- Particiones ---------------
@@ -41,19 +42,20 @@ if [[ "$EFI" = "" ]]; then
     parted -s "$DISK" mkpart primary fat32 1MiB 513MiB
 else
 	echo "creando UEFI"
-    parted -s "$DISK" mkpart "EFI system partition" fat32 1MiB 513MiB
+    parted -s "$DISK" mkpart esp fat32 1MiB 513MiB
     parted -s "$DISK" set 1 esp on
 fi
 
-ROOT_START="513MiB"
-ROOT_END="100%"
-
+if [[ "$SWAP" = false ]];then
+    ROOT_START="513MiB"
+    ROOT_END="100%"
+else
+    parted -s "$DISK" mkpart primary linux-swap 513MiB 8075MiB
+    ROOT_START="8075MiB"
+    ROOT_END="100%"
+fi
 
 parted -s "$DISK" mkpart primary ext4 "$ROOT_START" "$ROOT_END"
-
-if [[ "$EFI" = "/efi" ]]; then
-    type 2 4F68BCE3-E8CD-4DB1-96E7-FBCAF98B709
-fi
 
 # --------------- Formateo ---------------
 if [[ "$EFI" = "" ]]; then
@@ -62,8 +64,17 @@ fi
 
 mkfs.ext4 "${DISK}2"  # Formatear raíz
 
+if [[ "$SWAP" = true ]]; then
+    mkswap "${DISK}2"
+fi
+
 # --------------- Montaje ---------------
-mount "${DISK}2" /mnt
+if [[ "" = true ]]; then 
+    mount "${DISK}3" /mnt
+    swapon "${DISK}2"
+else
+    mount "${DISK}2" /mnt
+fi
 mkdir -p "/mnt/boot${EFI}"
 mount "${DISK}1" "/mnt/boot${EFI}"
 
@@ -72,6 +83,7 @@ pacstrap /mnt base base-devel networkmanager grub gvfs linux linux-firmware nano
 
 # Para laptops
 if [[ "$LAPTOP" = true ]]; then
+    # Controladores de wifi, el track pad, etc.
     pacstrap /mnt netctl wpa_supplicant dialog xf86-input-synaptics
 fi
 
