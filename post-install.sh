@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VM=false
-BSPWM="rice"     # Select between "rite" and "minimal" -> Rice is variant of gh0stzk, minimal is similar to s4vitar dotfiles.
+BSPWM="hack"     # Select between "rice" and "hack" -> Rice is variant of gh0stzk, hack is similar to s4vitar bspwm.
 BLACK=false
 
 ping -c 1 google.com &> /dev/null || (echo -e "[!] You don't have internet access. Check your connection" && exit 1)
@@ -37,14 +37,12 @@ git clone https://github.com/NvChad/starter ~/.config/nvim && nvim
 cd ~/Downloads
 git clone http://github.com/Angelpr2807/dotfiles.git
 
-if [[ "$BSPWM" = "minimal" ]]; then   
-    cd ~/Downloads/dotfiles
-    mv .* ~/
+if [[ "$BSPWM" = "hack" ]]; then   
+    cd ~/Downloads/dotfiles/config
+    cp .* ~/
     mv ~/.zshrc-hack ~/.zshrc
-    cp bspwm-hack/* ~/.config/
+    cp -r bspwm-hack/* ~/.config/
     cp -r nvim/lua/* ~/.config/nvim/lua/
-    rm -rf ./nvim
-    cp -r dunst ~/.config/dunst
     sudo mkdir /usr/share/zsh-sudo/
     cd /usr/share/zsh-sudo
     sudo wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh
@@ -55,25 +53,23 @@ else
     curl -LO https://raw.githubusercontent.com/gh0stzk/dotfiles/master/RiceInstaller
     chmod +x RiceInstaller
     ./RiceInstaller &&
-    cd ~/Downloads/dotfiles
-    mv .* ~/
+    cd ~/Downloads/dotfiles/config
+    cp .* ~/
     mv ~/.zshrc-rice ~/.zshrc
-    mv -r nvim/lua/* ~/.config/nvim/lua/
-    rm -rf ./nvim
+    cp -r nvim/lua/* ~/.config/nvim/lua/
     mkdir -p ~/.config/bspwm
     cp -r bspwm-rice/* ~/.config/bspwm
 fi
 
 cp -r kitty neofetch ranger rofi ~/.config
-rm -rf ~/Downloads/dotfiles
 
 # term plugins
 cd
 PLUGINS="/usr/share/zsh/plugins/"
-sudo mkdir -p 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${PLUGINS}/zsh-syntax-highlighting" 
-git clone https://github.com/zsh-users/zsh-autosuggestions "${PLUGINS}/zsh-autosuggestions"
-git clone --depth 1 https://github.com/junegunn/fzf.git "${PLUGINS}/.fzf"
+sudo mkdir -p "${PLUGINS}"
+sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${PLUGINS}/zsh-syntax-highlighting" 
+sudo git clone https://github.com/zsh-users/zsh-autosuggestions "${PLUGINS}/zsh-autosuggestions"
+sudo git clone --depth 1 https://github.com/junegunn/fzf.git "${PLUGINS}/.fzf"
 
 ${PLUGINS}/.fzf/install
 
@@ -91,7 +87,6 @@ cd /usr/share/fonts
 sudo unzip Hack.zip
 sudo unzip VictorMonoAll.zip
 sudo unzip roboto.zip
-#sudo unzip HACKED.zip
 sudo rm *.zip
 
 cd ~/Downloads/
@@ -144,9 +139,18 @@ if [[ -e /root/.p10k.zsh ]]; then
 	sudo rm /root/.p10k.zsh
 fi
 
+if [[ -e /root/.zshrc ]]; then
+	echo "backup of \".zshrc\" created in \"/root/.zshrc.bak\"";
+	cp /root/.zshrc /root/.zshrc.bak
+	sudo rm /root/.zshrc
+fi
+
 sudo ln -s "${HOME}/.zshrc" /root/.zshrc
 sudo ln -s "${HOME}/.p10k.zsh" /root/.p10k.zsh
 sudo rm -rf /root/.config/nvim/lua
 sudo ln -s "${HOME}/.config/nvim/lua" /root/.config/nvim/lua
 
-exit
+sudo cd /root
+sudo curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+exit 0
