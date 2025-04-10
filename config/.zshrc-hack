@@ -77,6 +77,10 @@ HISTFILE=~/.zsh_history
 
 setopt histignorealldups sharehistory
 
+# tab autocompletion
+autoload -Uz compinit
+compinit
+
 # Man pages colorized
 export MANROFFOPT="-c"
 export MANPAGER="sh -c 'col -xb | bat -pl man'"

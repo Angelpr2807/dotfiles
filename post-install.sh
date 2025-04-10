@@ -1,17 +1,26 @@
 #!/bin/bash
 
 VM=false
-BSPWM="hack"     # Select between "rice" and "hack" -> Rice is variant of gh0stzk, hack is similar to s4vitar bspwm.
-BLACK=false
+BSPWM="hack"         # Select between "rice" and "hack" -> Rice is variant of gh0stzk, hack is similar to s4vitar bspwm.
+BLACK=false          # Pentest packages.
+DRIVERS="nvidia"     # "nvidia, amd or none". (lspci -v | grep -A10 VGA)
 
 ping -c 1 google.com &> /dev/null || (echo -e "[!] You don't have internet access. Check your connection" && exit 1)
 
 sudo pacman -Syu archlinux-keyring &&
     sudo pacman -S git neovim ly xterm kitty firefox rofi nitrogen ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm
 
+if [[ "$DRIVERS" = "nvidia" ]]; then
+    # Nvidia
+    sudo pacman -S nvidia nvidia-settings nvidia-utils
+elif [[ "$DRIVERS" = "amd" ]]; then
+    # AMD
+    sudo pacman -S xf86-video-amdgpu vulkan-radeon opencl-mesa libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
+fi
+
 if [[ "$VM" = true ]]; then
 	# Packages needed for VM
-    sudo pacman -S wmname virtuabox-guest-utils arandr 
+    sudo pacman -S wmname virtuabox-guest-utils arandr wmname 
 fi
 
 # Change default shell
@@ -111,7 +120,7 @@ sudo pacman -Sy
 
 if [[ "$BLACK" = true ]]; then
 	# Pentesting packages
-    sudo pacman -S metasploit ruby-erb gobuster wireshark-cli burpsuite whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb
+    sudo pacman -S zsh-completions metasploit ruby-erb gobuster wireshark-cli burpsuite whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb
     cd /usr/share
     sudo git clone https://github.com/danielmiessler/SecLists.git
     sudo mkdir /usr/wordlists

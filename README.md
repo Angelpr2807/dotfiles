@@ -27,6 +27,10 @@ There are two executable options: arch-install.sh and post-install.sh. The first
 
 I use the neovim text editor with [NvChad](https://nvchad.com/) settings. I modified the files a bit to fit my workflow, but you can edit it to not use those settings in the `post-install.sh` file.
 
+## New Features
+
+I added the ability to encrypt GRUB and disk with the "encrypt disk" parameter; these options will be separated later. Directory errors were also fixed in post-install for the "rice" and "hack" dotfiles. Additionally, in "post-install," the ability to choose your dedicated GPU drivers, whether NVIDIA or AMD, has been added.
+
 > [!Warning]
 > For virtual machines, both modes have issues with the Picom settings. I haven't been able to find a solution, so in this case, simply removing the rounded edges and opacity works for me.
 >
