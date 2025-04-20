@@ -45,6 +45,8 @@ fi
 # --------------- Particiones ---------------
 # Eliminar todas las particiones previas
 parted -s "$DISK" mklabel "$TYPE"
+DISK_SUBPART=$(echo "$DISK" | awk -F "/" '{ print $NF }')        # /dev/DISK_SUBPART
+PARTITIONS=($(lsblk "$DISK" | grep -oP "${DISK_SUBPART}\w+"))    # sdx1 sdx2 por ejemplo
 
 # Crear particiones
 if [[ "$EFI" = "" ]]; then
@@ -57,14 +59,15 @@ else
 fi
 
 if [[ "$SWAP" = false ]];then
-    ROOT_PART="2"
+    ROOT_PART="${PARTITIONS[1]}"
     ROOT_START="513MiB"
     ROOT_END="100%"
 else
     parted -s "$DISK" mkpart primary linux-swap 513MiB 8075MiB
-    ROOT_PART="3"
     ROOT_START="8075MiB"
     ROOT_END="100%"
+    ROOT_PART="${PARTITIONS[2]}"
+    SWAP_PART="${PARTITIONS[1]}"
 fi
 
 parted -s "$DISK" mkpart primary ext4 "$ROOT_START" "$ROOT_END"
@@ -72,44 +75,44 @@ parted -s "$DISK" mkpart primary ext4 "$ROOT_START" "$ROOT_END"
 if [[ "$CIFRATE_DISK" = true ]]; then
     echo -e "\n################################################\n"
     echo -e "[!] Encrypting disk, please provide a password...\n"
-    cryptsetup luksFormat "${DISK}${ROOT_PART}"
-    cryptsetup open "${DISK}${ROOT_PART}" cryptroot
+    cryptsetup luksFormat "${ROOT_PART}"
+    cryptsetup open "${ROOT_PART}" cryptroot
 fi
 
 
 # --------------- Formateo ---------------
 if [[ "$EFI" = "" ]]; then
-    mkfs.vfat -F32 "${DISK}1"  # Formatear EFI
+    mkfs.vfat -F32 "${PARTITIONS[0]}"  # Formatear EFI
 fi
 
 if [[ "$CIFRATE_DISK" = true ]]; then
     echo -e "\n################################################\n" 
-    cryptsetup luksFormat "${DISK}${ROOT_PART}" 
-    cryptsetup open "${DISK}${ROOT_PART}" cryptroot
+    cryptsetup luksFormat "${ROOT_PART}" 
+    cryptsetup open "${ROOT_PART}" cryptroot
     mkfs.ext4 /dev/mapper/cryptroot
 fi
 
 if [[ "$SWAP" = true ]]; then
-    mkswap "${DISK}2"     
+    mkswap "${SWAP_PART}"     
 else
     if [[ "$CIFRATE_DISK" = false ]]; then
-        mkfs.ext4 "${DISK}${ROOT_PART}"
+        mkfs.ext4 "${ROOT_PART}"
     fi
 fi
 
 # --------------- Montaje ---------------
 if [[ "$SWAP" = true ]]; then 
-    swapon "${DISK}2"
+    swapon "${SWAP_PART}"
 fi
 
 if [[ "$CIFRATE_DISK" = true ]]; then
     mount /dev/mapper/cryptroot /mnt
 else
-    mount "${DISK}${ROOT_PART}"
+    mount "${ROOT_PART}" /mnt
 fi
 
 mkdir -p "/mnt/boot${EFI}"
-mount "${DISK}1" "/mnt/boot${EFI}"
+mount "${PARTITIONS[0]}" "/mnt/boot${EFI}"
 
 # --------------- Instalación del sistema ---------------
 pacstrap /mnt base base-devel networkmanager grub gvfs linux linux-firmware nano vim cryptsetup ${EFI:+efibootmgr}
@@ -149,11 +152,6 @@ if [[ "$CIFRATE_DISK" = true ]]; then
     fi
     sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems)/' "$mkinit_file"
 fi
-
-timedatectl set-timezone "$TIMEZONE"
-timedatectl set-ntp true
-
-echo "$NAME" > /etc/hostname
 
 sed -i 's/^#\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 #echo "LANG=$LANG" > /etc/locale.conf

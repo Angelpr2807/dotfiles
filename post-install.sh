@@ -120,7 +120,7 @@ sudo pacman -Sy
 
 if [[ "$BLACK" = true ]]; then
 	# Pentesting packages
-    sudo pacman -S zsh-completions metasploit ruby-erb gobuster wireshark-cli burpsuite whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb
+    sudo pacman -S zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli burpsuite whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb
     cd /usr/share
     sudo git clone https://github.com/danielmiessler/SecLists.git
     sudo mkdir /usr/wordlists
@@ -130,9 +130,6 @@ if [[ "$BLACK" = true ]]; then
     git clone https://github.com/openwall/john.git
     cd john/src && ./configure && make
 fi
-
-# Terminal plugins for root
-sudo ${PLUGINS}/.fzf/install
 
 # NvChad installation
 sudo rm -rf /root/.config/nvim
