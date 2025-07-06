@@ -57,6 +57,15 @@ XF86AudioNext
 XF86AudioPrev
     mpc prev
 
+# Brillo
+# Subir brillo
+XF86MonBrightnessUp
+    brightnessctl set +10%
+
+# Bajar brillo
+XF86MonBrightnessDown
+    brightnessctl set 10%-
+
 #|||----- System Keybindings -----|||#
 
 # Show keybindings help

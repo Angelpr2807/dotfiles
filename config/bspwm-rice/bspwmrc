@@ -16,7 +16,7 @@ export XDG_CURRENT_DESKTOP='bspwm'
 ## Fix java applications
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-opacity=0.5
+opacity=0.4
 
 #  ╦ ╦╔═╗╦═╗╦╔═╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗
 #  ║║║║ ║╠╦╝╠╩╗╚═╗╠═╝╠═╣║  ║╣ ╚═╗
