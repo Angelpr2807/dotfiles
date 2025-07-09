@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-DISK="/dev/sda"          # lsblk -a
+DISK="$1"          # lsblk -a
 LAPTOP=false             # special instalation for laptops
 SWAP=false               # Enable swap
 LANG="en_US.UTF-8"       # /etc/locale.gen
@@ -57,21 +57,18 @@ else
 fi
 
 if [[ "$SWAP" = false ]];then
-    ROOT_PART="${PARTITIONS[1]}"
     ROOT_START="513MiB"
     ROOT_END="100%"
 else
     parted -s "$DISK" mkpart primary linux-swap 513MiB 8075MiB
     ROOT_START="8075MiB"
     ROOT_END="100%"
-    ROOT_PART="${PARTITIONS[2]}"
-    SWAP_PART="${PARTITIONS[1]}"
 fi
 
 parted -s "$DISK" mkpart primary ext4 "$ROOT_START" "$ROOT_END"
 
-DISK_SUBPART=$(echo "$DISK" | awk -F "/" '{ print $NF }')        # /dev/DISK_SUBPART
-PARTITIONS=($(lsblk "$DISK" | grep -oP "${DISK_SUBPART}\w+"))    # sdx1 sdx2 por ejemplo
+DISK_SUBPART=$(echo "$DISK" | awk -F "/" '{ print $NF }')            # /dev/DISK_SUBPART
+PARTITIONS=($(lsblk "$DISK" | grep -oP "${DISK_SUBPART}[\w\d]+" | sort ))      # sdx1 sdx2 por ejemplo
 
 if [[ "$CIFRATE_DISK" = true ]]; then
     echo -e "\n################################################\n"
@@ -117,6 +114,7 @@ fi
 if [[ "$CIFRATE_DISK" = true ]]; then
     mount /dev/mapper/cryptroot /mnt
 else
+	echo "No se esta encriptando"
     mount "${ROOT_PART}" /mnt
 fi
 
