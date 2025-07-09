@@ -45,9 +45,7 @@ fi
 # --------------- Particiones ---------------
 # Eliminar todas las particiones previas
 parted -s "$DISK" mklabel "$TYPE"
-DISK_SUBPART=$(echo "$DISK" | awk -F "/" '{ print $NF }')        # /dev/DISK_SUBPART
-PARTITIONS=($(lsblk "$DISK" | grep -oP "${DISK_SUBPART}\w+"))    # sdx1 sdx2 por ejemplo
-
+#
 # Crear particiones
 if [[ "$EFI" = "" ]]; then
 	echo "creando  BIOS"
@@ -72,6 +70,9 @@ fi
 
 parted -s "$DISK" mkpart primary ext4 "$ROOT_START" "$ROOT_END"
 
+DISK_SUBPART=$(echo "$DISK" | awk -F "/" '{ print $NF }')        # /dev/DISK_SUBPART
+PARTITIONS=($(lsblk "$DISK" | grep -oP "${DISK_SUBPART}\w+"))    # sdx1 sdx2 por ejemplo
+
 if [[ "$CIFRATE_DISK" = true ]]; then
     echo -e "\n################################################\n"
     echo -e "[!] Encrypting disk, please provide a password...\n"
@@ -79,10 +80,18 @@ if [[ "$CIFRATE_DISK" = true ]]; then
     cryptsetup open "${ROOT_PART}" cryptroot
 fi
 
+BOOT_PART="/dev/${PARTITIONS[0]}"
+
+if [[ "$SWAP" = false ]];then
+    ROOT_PART="/dev/${PARTITIONS[1]}"
+else
+    ROOT_PART="/dev/${PARTITIONS[2]}"
+    SWAP_PART="/dev/${PARTITIONS[1]}"
+fi
 
 # --------------- Formateo ---------------
 if [[ "$EFI" = "" ]]; then
-    mkfs.vfat -F32 "${PARTITIONS[0]}"  # Formatear EFI
+    mkfs.vfat -F32 "${BOOT_PART}"  # Formatear EFI
 fi
 
 if [[ "$CIFRATE_DISK" = true ]]; then
@@ -112,7 +121,7 @@ else
 fi
 
 mkdir -p "/mnt/boot${EFI}"
-mount "${PARTITIONS[0]}" "/mnt/boot${EFI}"
+mount "${BOOT_PART}" "/mnt/boot${EFI}"
 
 # --------------- Instalación del sistema ---------------
 pacstrap /mnt base base-devel networkmanager grub gvfs linux linux-firmware nano vim cryptsetup ${EFI:+efibootmgr}

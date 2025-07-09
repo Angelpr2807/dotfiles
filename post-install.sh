@@ -70,7 +70,12 @@ else
     cp -r bspwm-rice/* ~/.config/bspwm
 fi
 
+cd ~/Downloads/dotfiles/config
 cp -r kitty neofetch ranger rofi ~/.config
+
+cd ./specials 
+# Special files
+sudo cp ./ly/config.ini /etc/ly
 
 # term plugins
 cd
