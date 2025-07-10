@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ "$#" -ne 1 ]]; then
+    echo -e "\n[!] Necesitas proveer el disco para realizar la instalación.";
+    echo -e "\tUso: $0 <disco>\n";
+    exit 1;
+fi
+
 # Variables
 DISK="$1"          # lsblk -a
 LAPTOP=false             # special instalation for laptops
@@ -87,9 +93,7 @@ else
 fi
 
 # --------------- Formateo ---------------
-if [[ "$EFI" = "" ]]; then
-    mkfs.vfat -F32 "${BOOT_PART}"  # Formatear EFI
-fi
+mkfs.vfat -F32 "${BOOT_PART}"  # Formatear EFI
 
 if [[ "$CIFRATE_DISK" = true ]]; then
     echo -e "\n################################################\n" 

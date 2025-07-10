@@ -39,7 +39,7 @@ FOCUSED_BC="#bd93f9"	# Focused border color
 
 # Terminal font & size
 term_font_size="10"
-term_font_name="JetBrainsMono Nerd Font"
+term_font_name="Roboto-Medium"
 
 # Picom options
 P_FADE="true"			# Fade true|false

@@ -8,7 +8,7 @@ DRIVERS="nvidia"     # "nvidia, amd or none". (lspci -v | grep -A10 VGA)
 ping -c 1 google.com &> /dev/null || (echo -e "[!] You don't have internet access. Check your connection" && exit 1)
 
 sudo pacman -Syu archlinux-keyring &&
-    sudo pacman -S git neovim ly xterm kitty firefox rofi nitrogen ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm
+    sudo pacman -S git neovim ly xterm kitty firefox rofi nitrogen ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli
 
 if [[ "$DRIVERS" = "nvidia" ]]; then
     # Nvidia
@@ -83,6 +83,7 @@ PLUGINS="/usr/share/zsh/plugins/"
 sudo mkdir -p "${PLUGINS}"
 sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${PLUGINS}/zsh-syntax-highlighting" 
 sudo git clone https://github.com/zsh-users/zsh-autosuggestions "${PLUGINS}/zsh-autosuggestions"
+sudo git clone https://github.com/zsh-users/zsh-history-substring-search.git "${PLUGINS}/zsh-history-substring-search"
 sudo git clone --depth 1 https://github.com/junegunn/fzf.git "${PLUGINS}/.fzf"
 
 ${PLUGINS}/.fzf/install
@@ -125,7 +126,7 @@ sudo pacman -Sy
 
 if [[ "$BLACK" = true ]]; then
 	# Pentesting packages
-    sudo pacman -S zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli burpsuite whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb
+    sudo pacman -S zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli burpsuite whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb rustscan 
     cd /usr/share
     sudo git clone https://github.com/danielmiessler/SecLists.git
     sudo mkdir /usr/wordlists
