@@ -2,25 +2,45 @@
 
 VM=false
 BSPWM="rice"         # Select between "rice" and "hack" -> Rice is variant of gh0stzk, hack is similar to s4vitar bspwm.
-BLACK=false          # Pentest packages.
+BLACK=true           # Pentest packages (true or false).
 DRIVERS="nvidia"     # "nvidia, amd or none". (lspci -v | grep -A10 VGA)
 
-ping -c 1 google.com &> /dev/null || (echo -e "[!] You don't have internet access. Check your connection" && exit 1)
+ctrl_c() {
+    echo -e "\n\t[!] Ctrl+C detected, stopping the script."
+    exit 2
+}
 
-sudo pacman -Syu archlinux-keyring &&
-    sudo pacman -S git neovim ly xterm kitty firefox rofi nitrogen ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli
+trap_error() {
+    if [[ "$?" -ne "0" ]]; then	
+        echo -e "$1"
+	exit 1
+    fi
+}
+
+trap ctrl_c INT
+
+ping -c 1 google.com &> /dev/null 
+trap_error "\n\t[!] You don't have internet access. Check your connection\n"
+
+sudo pacman -Sy archlinux-keyring
+
+sudo pacman -S git neovim ly xterm kitty firefox rofi ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli google-chrome
+trap_error "\n\t[!] Warning: Error in package installing"
 
 if [[ "$DRIVERS" = "nvidia" ]]; then
     # Nvidia
     sudo pacman -S nvidia nvidia-settings nvidia-utils
+    trap_error "\n\t[!] Warning: Error in gpu driver installing"
 elif [[ "$DRIVERS" = "amd" ]]; then
     # AMD
     sudo pacman -S xf86-video-amdgpu vulkan-radeon opencl-mesa libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau
+    trap_error "\n\t[!] Warning: Error in package installing"
 fi
 
 if [[ "$VM" = true ]]; then
-	# Packages needed for VM
-    sudo pacman -S wmname virtuabox-guest-utils arandr wmname 
+    # Packages needed for VM
+    sudo pacman -S wmname virtuabox-guest-utils arandr wmname
+    trap_error "\n\t[!] Warning: Error in vm packages installing"
 fi
 
 # Change default shell
@@ -43,65 +63,28 @@ rm -rf ~/.local/state/nvim
 rm -rf ~/.local/share/nvim
 git clone https://github.com/NvChad/starter ~/.config/nvim && nvim
 
-cd ~/Downloads
-git clone http://github.com/Angelpr2807/dotfiles.git
-
-if [[ "$BSPWM" = "hack" ]]; then   
-    cd ~/Downloads/dotfiles/config
-    cp .* ~/
-    mv ~/.zshrc-hack ~/.zshrc
-    cp -r bspwm-hack/* ~/.config/
-    cp -r nvim/lua/* ~/.config/nvim/lua/
-    sudo mkdir /usr/share/zsh-sudo/
-    cd /usr/share/zsh-sudo
-    sudo wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
-    sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
-else
-    cd
-    curl -LO https://raw.githubusercontent.com/gh0stzk/dotfiles/master/RiceInstaller
-    chmod +x RiceInstaller
-    ./RiceInstaller &&
-    cd ~/Downloads/dotfiles/config
-    cp .* ~/
-    mv ~/.zshrc-rice ~/.zshrc
-    cp -r nvim/lua/* ~/.config/nvim/lua/
-    mkdir -p ~/.config/bspwm
-    cp -r bspwm-rice/* ~/.config/bspwm
-fi
-
-cd ~/Downloads/dotfiles/config
-cp -r kitty neofetch ranger rofi ~/.config
-
-cd ./specials 
-# Special files
-sudo cp ./ly/config.ini /etc/ly
-
 # term plugins
 cd
-PLUGINS="/usr/share/zsh/plugins/"
+PLUGINS="/usr/share/zsh/plugins"
 sudo mkdir -p "${PLUGINS}"
 sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${PLUGINS}/zsh-syntax-highlighting" 
 sudo git clone https://github.com/zsh-users/zsh-autosuggestions "${PLUGINS}/zsh-autosuggestions"
 sudo git clone https://github.com/zsh-users/zsh-history-substring-search.git "${PLUGINS}/zsh-history-substring-search"
 sudo git clone --depth 1 https://github.com/junegunn/fzf.git "${PLUGINS}/.fzf"
-
 ${PLUGINS}/.fzf/install
+sudo ${PLUGINS}/.fzf/install
 
-# fonst and icons
-cd ~/Downloads
-mkdir fonts
-cd fonts
+# Download fonts and icons
+cd ~/Downloads/dotfiles/config/specials/fonts
 wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Hack.zip
 wget https://rubjo.github.io/victor-mono/VictorMonoAll.zip
 wget https://font.download/dl/font/roboto.zip
-#wget https://hackedfont.com/HACKED.zip   # I recomend install manually
 
 sudo mv *.zip /usr/share/fonts/
 cd /usr/share/fonts
-sudo unzip Hack.zip
-sudo unzip VictorMonoAll.zip
-sudo unzip roboto.zip
+ls *.zip | while read zip; do
+    sudo unzip "$zip"
+done
 sudo rm *.zip
 
 cd ~/Downloads/
@@ -119,14 +102,16 @@ cd ~/Desktop/
 mkdir -p repos/blackarch
 cd ~/Desktop/repos/blackarch
 curl -O https://blackarch.org/strap.sh
-echo bbf0a0b838aed0ec05fff2d375dd17591cbdf8aa strap.sh | sha1sum -c &&
+echo $(curl -X GET https://blackarch.org/downloads.html 2>/dev/null | grep -A1 "Verify the SHA1 sum" | grep -oP "\w{40}") strap.sh | sha1sum -c &&
 chmod +x strap.sh
-sudo ./strap.sh
+sudo ./strap.sh 
+trap_error "\n\t[!] Warning: Error in blackarch repo installing"
 sudo pacman -Sy
 
-if [[ "$BLACK" = true ]]; then
-	# Pentesting packages
-    sudo pacman -S zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli burpsuite whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb rustscan 
+if [[ "$BLACK" = true ]]; then	
+    # Pentesting packages
+    sudo pacman -S zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli caido whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb rustscan
+    trap_error "\n\t[!] Warning: Error in pentesting packages installing" && exit 1
     cd /usr/share
     sudo git clone https://github.com/danielmiessler/SecLists.git
     sudo mkdir /usr/wordlists
@@ -136,6 +121,46 @@ if [[ "$BLACK" = true ]]; then
     git clone https://github.com/openwall/john.git
     cd john/src && ./configure && make
 fi
+
+cd ~/Downloads
+git clone http://github.com/Angelpr2807/dotfiles.git
+
+if [[ "$BSPWM" = "hack" ]]; then   
+    cd ~/Downloads/dotfiles/config
+    cp .* ~/
+    mv ~/.zshrc-hack ~/.zshrc
+    rm ~/.zshrc-rice
+    cp -r bspwm-hack/* ~/.config/
+    cp -r nvim/lua/* ~/.config/nvim/lua/
+    sudo mkdir /usr/share/zsh-sudo/
+    cd /usr/share/zsh-sudo
+    sudo wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+    sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
+else
+    cd
+    curl -LO https://raw.githubusercontent.com/gh0stzk/dotfiles/master/RiceInstaller
+    chmod +x RiceInstaller
+    ./RiceInstaller &&
+    cd ~/Downloads/dotfiles/config
+    cp .* ~/
+    mv ~/.zshrc-rice ~/.zshrc
+    rm ~/.zshrc-hack
+    cp -r nvim/lua/* ~/.config/nvim/lua/
+    mkdir -p ~/.config/bspwm
+    cp -r bspwm-rice/* ~/.config/bspwm
+fi
+
+cd ~/.config
+rm -rf kitty unifetch ranger rofi && cd ~/Downloads/dotfiles/config
+cp -r kitty unifetch ranger rofi ~/.config
+
+cd ./specials 
+# Special files
+sudo cp ./ly/config.ini /etc/ly
+sudo mv ./icons/* /usr/share/icons
+cd /usr/share/icons
+sudo tar -xvf Zafiro-Icons-Dark.tar.xz
 
 # NvChad installation
 sudo rm -rf /root/.config/nvim
