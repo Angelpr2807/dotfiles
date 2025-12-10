@@ -13,7 +13,6 @@
 export BROWSER='google-chrome-stable'
 export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
 export SUDO_PROMPT="Deploying root access for %u. Password pls: "
-export BAT_THEME="base16"
 
 if [ -d "$HOME/.local/bin" ] ;
   then PATH="$HOME/.local/bin:$PATH"
@@ -200,9 +199,9 @@ alias grub-update="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 
 alias music="ncmpcpp"
 
-alias cat="bat --theme=base16"
-alias ls='eza --icons=always --color=always -a'
-alias ll='eza --icons=always --color=always -la'
+#alias cat="bat --theme=base16"
+#alias ls='eza --icons=always --color=always -a'
+#alias ll='eza --icons=always --color=always -la'
 
 # Custom
 alias ls='/bin/lsd'
@@ -210,8 +209,10 @@ alias cat='/bin/bat'
 alias l='ls -l'
 alias lla='ls -la'
 alias lRa='ls -lRa'
-alias chrome='firejail google-chrome-stable &> /dev/null & disown'
+alias neofetch='unifetch'
+alias chrome='google-chrome-stable &> /dev/null & disown'
 alias firefox='firejail firefox &> /dev/null & disown'
+alias john='~/Downloads/john/run/john'
 
 # Modify path
 # Path
@@ -219,15 +220,10 @@ export PATH="/root/.local/bin:/snap/bin:/usr/sandbox/:/usr/local/bin:/usr/bin:/b
 
 export PATH="$PATH:${HOME}/.local/lib/python3.11/site-packages"
 export PATH="$PATH:$HOME/go/bin/"
+export PATH="$PATH:$HOME/Downloads/john/run"
 
 # man pages
 export MANPAGER="sh -c 'col -xb | bat -pl man'"
 export MANROFFOPT="-c"
 export VISUAL=nvim
 export EDITOR=nvim
-
-#  ┌─┐┬ ┬┌┬┐┌─┐  ┌─┐┌┬┐┌─┐┬─┐┌┬┐
-#  ├─┤│ │ │ │ │  └─┐ │ ├─┤├┬┘ │
-#  ┴ ┴└─┘ ┴ └─┘  └─┘ ┴ ┴ ┴┴└─ ┴
-#$HOME/.local/bin/colorscript -r
-#disable-fzf-tab

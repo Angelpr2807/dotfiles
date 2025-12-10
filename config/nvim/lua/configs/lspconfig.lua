@@ -1,32 +1,28 @@
 -- EXAMPLE 
-local on_attach = require("nvchad.configs.lspconfig").on_attach
-local on_init = require("nvchad.configs.lspconfig").on_init
-local capabilities = require("nvchad.configs.lspconfig").capabilities
+require("nvchad.configs.lspconfig").defaults()
 
-local lspconfig = require "lspconfig"
-local servers = { "html", "cssls", "emmet_ls", "rust_analyzer", "bashls", "clangd" }
+local lspenable = vim.lsp.enable
+local servers = { "html",
+    "cssls",
+    "emmet_ls",
+    "rust_analyzer",
+    "bashls",
+    "clangd",
+    "ts_ls",
+    "astro",
+    "lua_ls",
+    "emmet_ls",
+    "bashls",
+    "clangd",
+    "css_variables",
+    "html",
+    "docker_compose_language_service",
+    "dockerls",
+    "intelephense",
+    "julials",
+    "rust_analyzer",
+    "pylsp",
+    "grammarly",
+}
 
--- lsps with default config
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = on_attach,
-    on_init = on_init,
-    capabilities = capabilities,
-  }
-end
-
-lspconfig.ts_ls.setup {}
-lspconfig.astro.setup{}
-lspconfig.lua_ls.setup{}
-lspconfig.emmet_ls.setup{}
-lspconfig.bashls.setup{}
-lspconfig.clangd.setup{}
-lspconfig.css_variables.setup{}
-lspconfig.html.setup{}
-lspconfig.docker_compose_language_service.setup{}
-lspconfig.dockerls.setup{}
-lspconfig.intelephense.setup{}
-lspconfig.julials.setup{}
-lspconfig.rust_analyzer.setup{}
-lspconfig.pylsp.setup{}
-lspconfig.grammarly.setup{}
+lspenable(servers)
