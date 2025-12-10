@@ -22,9 +22,9 @@ trap ctrl_c INT
 ping -c 1 google.com &> /dev/null 
 trap_error "\n\t[!] You don't have internet access. Check your connection\n"
 
-sudo pacman -Sy archlinux-keyring
+sudo pacman -Sy --needed archlinux-keyring
 
-sudo pacman -S git neovim ly xterm kitty firefox rofi ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli google-chrome
+sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli obsidian
 trap_error "\n\t[!] Warning: Error in package installing"
 
 if [[ "$DRIVERS" = "nvidia" ]]; then
@@ -39,7 +39,7 @@ fi
 
 if [[ "$VM" = true ]]; then
     # Packages needed for VM
-    sudo pacman -S wmname virtuabox-guest-utils arandr wmname
+    sudo pacman -S wmname virtualbox-guest-utils arandr wmname
     trap_error "\n\t[!] Warning: Error in vm packages installing"
 fi
 
@@ -110,8 +110,8 @@ sudo pacman -Sy
 
 if [[ "$BLACK" = true ]]; then	
     # Pentesting packages
-    sudo pacman -S zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli caido whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb rustscan
-    trap_error "\n\t[!] Warning: Error in pentesting packages installing" && exit 1
+    sudo pacman -S --needed zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli caido whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit python-ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb rustscan
+    trap_error "\n\t[!] Warning: Error in pentesting packages installing"
     cd /usr/share
     sudo git clone https://github.com/danielmiessler/SecLists.git
     sudo mkdir /usr/wordlists
@@ -122,9 +122,6 @@ if [[ "$BLACK" = true ]]; then
     cd john/src && ./configure && make
 fi
 
-cd ~/Downloads
-git clone http://github.com/Angelpr2807/dotfiles.git
-
 if [[ "$BSPWM" = "hack" ]]; then   
     cd ~/Downloads/dotfiles/config
     cp .* ~/
@@ -132,11 +129,17 @@ if [[ "$BSPWM" = "hack" ]]; then
     rm ~/.zshrc-rice
     cp -r bspwm-hack/* ~/.config/
     cp -r nvim/lua/* ~/.config/nvim/lua/
-    sudo mkdir /usr/share/zsh-sudo/
-    cd /usr/share/zsh-sudo
+    sudo mkdir ${PLUGINS}/zsh-sudo
+    cd ${PLUGINS}/zsh-sudo
     sudo wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
     sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
+
+    sudo pacman -S --needed base-devel
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si
+    sudo paru -S caido unifetch
 else
     cd
     curl -LO https://raw.githubusercontent.com/gh0stzk/dotfiles/master/RiceInstaller

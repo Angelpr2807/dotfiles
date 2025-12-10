@@ -219,11 +219,24 @@ alias john='~/Downloads/john/run/john'
 export PATH="/root/.local/bin:/snap/bin:/usr/sandbox/:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games/usr/sbin:/sbin:/usr/local/games:/usr/games:${PATH}"
 
 export PATH="$PATH:${HOME}/.local/lib/python3.11/site-packages"
+export PATH="$PATH:${HOME}/.local/share/gem/ruby/3.4.0/bin"
 export PATH="$PATH:$HOME/go/bin/"
 export PATH="$PATH:$HOME/Downloads/john/run"
+export PATH="$PATH:$HOME/Documents/flutter/bin"
 
 # man pages
 export MANPAGER="sh -c 'col -xb | bat -pl man'"
 export MANROFFOPT="-c"
 export VISUAL=nvim
 export EDITOR=nvim
+
+mkt (){
+    mkdir nmap content exploits;
+    echo -e "\t=> Directory structure successfully created.";
+    tree --noreport || ls;
+}
+
+cpyip (){
+    IP=$(ip a | grep -A 1 'link/ether' | grep -oP "(\d{1,3}\.){3}\d{1,3}" | head -1)
+    echo "$IP" | xclip -r -sel clip1
+}

@@ -14,8 +14,8 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 # Pluggins
 PLUGINS="/usr/share/zsh/plugins"
 source ${PLUGINS}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ${PLUGINS}.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/share/zsh-sudo/sudo.plugin.zsh
+source ${PLUGINS}/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ${PLUGINS}/zsh-sudo/sudo.plugin.zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -39,6 +39,7 @@ alias l='ls -l'
 alias lla='ls -la'
 alias lRa='ls -lRa'
 alias grep='grep --color'
+alias neofetch='unifetch'
 alias chrome='google-chrome-stable &> /dev/null & disown'
 alias firefox='firejail firefox &> /dev/null & disown'
 

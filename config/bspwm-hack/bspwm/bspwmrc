@@ -20,15 +20,15 @@ bspc config pointer_follows_focus false
 bspc config focused_border_color "#51afef"
 
 #AutoStart
-#picom &					# composer
-nitrogen --restore & 			# wallpaper
-dunst & 				# notify daemon
-$HOME/.config/polybar/launch.sh		# polybar
-setxkbmap us -variant dvorak-intl	# keyboard distribution
+#picom &					                                   # composer
+feh -z --no-fehbg --bg-fill ${HOME}/Pictures/walls	 # wallpaper
+dunst & 				                                     # notify daemon
+$HOME/.config/polybar/launch.sh	                     # polybar
+setxkbmap us -variant dvorak-intl	                   # keyboard distribution
 
 #vm - resolution arandr
 xrandr --output $(xrandr | grep " connected" | awk '{ print $1 }') --mode 1920x1080 --pos 0x0 --rotate normal
 
 # virtualbox clipboard
-VBoxClient --clipboard
-VBoxClient --draganddrop
+#VBoxClient --clipboard
+#VBoxClient --draganddrop
