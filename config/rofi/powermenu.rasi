@@ -34,10 +34,10 @@ window {
     text-color:                     @foreground;
     border-radius:                  20px;
     border: 		    	    1;
-    height:                         260px;
+    height:                         280px;
     width:                          300px;
-    x-offset:                       -8;
-    y-offset:                       8;
+    x-offset:                       -12;
+    y-offset:                       55;
 }
 
 prompt {

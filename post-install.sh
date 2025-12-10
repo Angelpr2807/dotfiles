@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VM=false
-BSPWM="hack"         # Select between "rice" and "hack" -> Rice is variant of gh0stzk, hack is similar to s4vitar bspwm.
+BSPWM="rice"         # Select between "rice" and "hack" -> Rice is variant of gh0stzk, hack is similar to s4vitar bspwm.
 BLACK=false          # Pentest packages.
 DRIVERS="nvidia"     # "nvidia, amd or none". (lspci -v | grep -A10 VGA)
 
