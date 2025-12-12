@@ -48,7 +48,8 @@ sudo chsh -s $(which zsh) $(whoami)
 sudo chsh -s $(which zsh) root
 
 # Display manager
-sudo systemctl enable ly.service
+sudo systemctl enable ly@tty2.service
+sudo systemctl disable getty@tty2.service
 
 # Themes for GUI
 echo -e "QT_QPA_PLATFORMTHEME=qt5ct\nGTK_THEME=Adwaita:dark" | sudo tee /etc/environment
