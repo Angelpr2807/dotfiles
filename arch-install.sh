@@ -186,6 +186,9 @@ echo "$USERNAME:$USERPASS" | chpasswd
 
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 
+timedatectl set-timezone $TIMEZONE
+timedatectl set-ntp true
+
 if [[ "$CIFRATE_DISK" = true ]]; then
     mkinitcpio -P
 fi

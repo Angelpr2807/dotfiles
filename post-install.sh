@@ -43,6 +43,9 @@ if [[ "$VM" = true ]]; then
     trap_error "\n\t[!] Warning: Error in vm packages installing"
 fi
 
+# Microcontrollers
+# sudo pacman -S esptool
+
 # Change default shell
 sudo chsh -s $(which zsh) $(whoami)
 sudo chsh -s $(which zsh) root

@@ -27,7 +27,7 @@ super + Delete
     ~/.config/rofi/powermenu
 
 super + u
-    firejail google-chrome-stable &> /dev/null & disown
+    google-chrome-stable &> /dev/null & disown
 
 XF86AudioRaiseVolume
     pactl set-sink-volume @DEFAULT_SINK@ +5%
@@ -56,15 +56,6 @@ XF86AudioNext
 # Canción anterior
 XF86AudioPrev
     mpc prev
-
-# Brillo
-# Subir brillo
-XF86MonBrightnessUp
-    brightnessctl set +10%
-
-# Bajar brillo
-XF86MonBrightnessDown
-    brightnessctl set 10%-
 
 #|||----- System Keybindings -----|||#
 
@@ -152,7 +143,7 @@ super + Tab
 	bspc desktop -l next
 
 # set the window state
-super + {shift + Return,shift + slash,y,p}
+super + {shift + Return,shift + p,y,shift + slash}
 	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
 # focus the node in the given direction

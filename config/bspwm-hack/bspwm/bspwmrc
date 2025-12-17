@@ -30,5 +30,5 @@ setxkbmap us -variant dvorak-intl	                   # keyboard distribution
 xrandr --output $(xrandr | grep " connected" | awk '{ print $1 }') --mode 1920x1080 --pos 0x0 --rotate normal
 
 # virtualbox clipboard
-#VBoxClient --clipboard
-#VBoxClient --draganddrop
+VBoxClient --clipboard
+VBoxClient --draganddrop
