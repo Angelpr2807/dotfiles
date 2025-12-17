@@ -54,6 +54,10 @@ sudo chsh -s $(which zsh) root
 sudo systemctl enable ly@tty2.service
 sudo systemctl disable getty@tty2.service
 
+# Auto suspend config
+sudo sed -ie "s/#IdleAction=ignore/IdleAction=suspend" /etc/systemd/logind.conf
+sudo sed -ie "s/#IdleActionSec=15min/IdleActionSec=30min" /etc/systemd/logind.conf
+
 # Themes for GUI
 echo -e "QT_QPA_PLATFORMTHEME=qt5ct\nGTK_THEME=Adwaita:dark" | sudo tee /etc/environment
 
