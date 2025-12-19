@@ -24,7 +24,7 @@ trap_error "\n\t[!] You don't have internet access. Check your connection\n"
 
 sudo pacman -Sy --needed archlinux-keyring
 
-sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli obsidian
+sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli xss-lock
 trap_error "\n\t[!] Warning: Error in package installing"
 
 if [[ "$DRIVERS" = "nvidia" ]]; then
@@ -53,10 +53,6 @@ sudo chsh -s $(which zsh) root
 # Display manager
 sudo systemctl enable ly@tty2.service
 sudo systemctl disable getty@tty2.service
-
-# Auto suspend config
-sudo sed -ie "s/#IdleAction=ignore/IdleAction=suspend" /etc/systemd/logind.conf
-sudo sed -ie "s/#IdleActionSec=15min/IdleActionSec=30min" /etc/systemd/logind.conf
 
 # Themes for GUI
 echo -e "QT_QPA_PLATFORMTHEME=qt5ct\nGTK_THEME=Adwaita:dark" | sudo tee /etc/environment

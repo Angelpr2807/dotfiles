@@ -89,6 +89,10 @@ bspc config normal_border_color       "#7855e1"
 bspc rule -a kitty floating=on border=on
 bspc rule -a kitty floating=off border=off
 
+# Auto suspend
+xss-lock -- systemctl suspend &
+
+# Brillo de monitores
 xrandr | grep -P " connected" | awk '{ print $1 }' | while read monitor; do
     xrandr --output "$monitor" --brightness "${opacity}"  #brightness screen
 done

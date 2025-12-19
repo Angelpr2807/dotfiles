@@ -29,6 +29,9 @@ setxkbmap us -variant dvorak-intl	                   # keyboard distribution
 #vm - resolution arandr
 xrandr --output $(xrandr | grep " connected" | awk '{ print $1 }') --mode 1920x1080 --pos 0x0 --rotate normal
 
+# Auto suspend
+xss-lock -- systemctl suspend &
+
 # virtualbox clipboard
 VBoxClient --clipboard
 VBoxClient --draganddrop
