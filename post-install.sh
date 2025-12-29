@@ -28,8 +28,8 @@ if [[ "$DISTRO" = "arch" ]]; then
 
     sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli xss-lock
     trap_error "\n\t[!] Warning: Error in package installing"
-else if [[ "$DISTRO" = "debian" ]]; then
-    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh xss-lock
+elif [[ "$DISTRO" = "debian" ]]; then
+    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh xss-lock
 fi
 
 if [[ "$DISTRO" = "arch" ]]; then
@@ -148,6 +148,7 @@ if [[ "$BSPWM" = "hack" ]]; then
     mkdir ~/Pictures/walls
     mv bspwm-hack/walls/* ~/Pictures/walls
     cp -r bspwm-hack/* ~/.config/
+    rm -f ~/.config/polybar/config
     cp -r nvim/lua/* ~/.config/nvim/lua/
     sudo mkdir /usr/share/zsh/plugins/zsh-sudo
     sudo wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
