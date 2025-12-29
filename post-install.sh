@@ -26,10 +26,10 @@ trap_error "\n\t[!] You don't have internet access. Check your connection\n"
 if [[ "$DISTRO" = "arch" ]]; then
     sudo pacman -Sy --needed archlinux-keyring
 
-    sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli xss-lock
+    sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli eza xss-lock
     trap_error "\n\t[!] Warning: Error in package installing"
 elif [[ "$DISTRO" = "debian" ]]; then
-    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh xss-lock
+    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh eza xss-lock
 fi
 
 if [[ "$DISTRO" = "arch" ]]; then
@@ -44,11 +44,11 @@ if [[ "$DISTRO" = "arch" ]]; then
     fi
 fi
 
-if [[ "$VM" = true -a "$DISTRO" = "arch" ]]; then
+if [[ "$VM" = true && "$DISTRO" = "arch" ]]; then
     # Packages needed for VM
     sudo pacman -S wmname virtualbox-guest-utils arandr
     trap_error "\n\t[!] Warning: Error in vm packages installing"
-elif [[ "$VM" = true -a "$DISTRO" = "debian" ]]; then
+elif [[ "$VM" = true && "$DISTRO" = "debian" ]]; then
     sudo apt install suckless-tools virtualbox-guest-utils arandr
     trap_error "\n\t[!] Warning: Error in vm packages installing"
 fi
@@ -86,6 +86,8 @@ sudo mkdir -p "${PLUGINS}"
 sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${PLUGINS}/zsh-syntax-highlighting" 
 sudo git clone https://github.com/zsh-users/zsh-autosuggestions "${PLUGINS}/zsh-autosuggestions"
 sudo git clone https://github.com/zsh-users/zsh-history-substring-search.git "${PLUGINS}/zsh-history-substring-search"
+sudo git clone https://github.com/zsh-users/zsh-history-substring-search.git "${PLUGINS}/zsh-history-substring-search"
+sudo git clone https://github.com/Aloxaf/fzf-tab.git "${PLUGINS}/fzf-tab-git"
 sudo git clone --depth 1 https://github.com/junegunn/fzf.git "${PLUGINS}/.fzf"
 ${PLUGINS}/.fzf/install
 sudo ${PLUGINS}/.fzf/install
@@ -105,7 +107,7 @@ sudo rm *.zip
 
 cd ~/Downloads/
 
-if [[ "$VM" = false -a "$DISTRO" = "arch" ]]; then
+if [[ "$VM" = false && "$DISTRO" = "arch" ]]; then
     # grub watch dogs
     git clone --depth 1 https://github.com/VandalByte/dedsec-grub2-theme.git && cd dedsec-grub2-theme
     sudo python3 dedsec-theme.py --install
@@ -126,7 +128,7 @@ if [[ "$DISTRO" = "arch" ]]; then
     sudo pacman -Sy
 fi
 
-if [[ "$BLACK" = true -a "$DISTRO" = "arch" ]]; then	
+if [[ "$BLACK" = true && "$DISTRO" = "arch" ]]; then	
     # Pentesting packages
     sudo pacman -S --needed zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli caido whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit python-ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb rustscan
     trap_error "\n\t[!] Warning: Error in pentesting packages installing"
@@ -145,13 +147,13 @@ if [[ "$BSPWM" = "hack" ]]; then
     cp .* ~/
     mv ~/.zshrc-hack ~/.zshrc
     rm ~/.zshrc-rice
-    mkdir ~/Pictures/walls
+    mkdir -p ~/Pictures/walls
     mv bspwm-hack/walls/* ~/Pictures/walls
     cp -r bspwm-hack/* ~/.config/
     rm -f ~/.config/polybar/config
     cp -r nvim/lua/* ~/.config/nvim/lua/
     sudo mkdir /usr/share/zsh/plugins/zsh-sudo
-    sudo wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
+    sudo curl -X GET https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh -o /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
     sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
 
