@@ -29,7 +29,7 @@ if [[ "$DISTRO" = "arch" ]]; then
     sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli eza xss-lock
     trap_error "\n\t[!] Warning: Error in package installing"
 elif [[ "$DISTRO" = "debian" ]]; then
-    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh eza xss-lock
+    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh eza xss-lock npm
 fi
 
 if [[ "$DISTRO" = "arch" ]]; then
@@ -89,8 +89,6 @@ sudo git clone https://github.com/zsh-users/zsh-history-substring-search.git "${
 sudo git clone https://github.com/zsh-users/zsh-history-substring-search.git "${PLUGINS}/zsh-history-substring-search"
 sudo git clone https://github.com/Aloxaf/fzf-tab.git "${PLUGINS}/fzf-tab-git"
 sudo git clone --depth 1 https://github.com/junegunn/fzf.git "${PLUGINS}/.fzf"
-${PLUGINS}/.fzf/install
-sudo ${PLUGINS}/.fzf/install
 
 # Download fonts and icons
 cd ~/Downloads/dotfiles/config/specials/fonts
@@ -184,7 +182,9 @@ cp -r kitty unifetch ranger rofi ~/.config
 
 cd ./specials 
 # Special files
-sudo cp ./ly/config.ini /etc/ly
+if [[ "$DISTRO" = "arch" ]]; then
+    sudo cp ./ly/config.ini /etc/ly
+fi
 sudo mv ./icons/* /usr/share/icons
 cd /usr/share/icons
 sudo tar -xvf Zafiro-Icons-Dark.tar.xz
