@@ -230,6 +230,16 @@ export MANROFFOPT="-c"
 export VISUAL=nvim
 export EDITOR=nvim
 
+wifi-connect () {
+    if [[ "$#" -ne 1 ]]; then
+        echo "[!] Debes proporcionar la red";
+        echo "\n\t[+] Uso: $0 <SSID>";
+        exit 1;
+    fi
+    echo -e "[+] Conectandose a la red $1"
+    nmcli device wifi connect "$1" --ask
+}
+
 mkt (){
     mkdir nmap content exploits;
     echo -e "\t=> Directory structure successfully created.";

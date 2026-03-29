@@ -126,7 +126,7 @@ mkdir -p "/mnt/boot${EFI}"
 mount "${BOOT_PART}" "/mnt/boot${EFI}"
 
 # --------------- Instalación del sistema ---------------
-pacstrap /mnt base base-devel networkmanager grub gvfs linux linux-firmware nano vim cryptsetup ${EFI:+efibootmgr}
+pacstrap /mnt base base-devel os-prober networkmanager grub gvfs linux linux-firmware nano vim cryptsetup ${EFI:+efibootmgr}
 
 # Para laptops
 if [[ "$LAPTOP" = true ]]; then
@@ -185,6 +185,7 @@ useradd -m -G wheel -s /bin/bash "$USERNAME"
 echo "$USERNAME:$USERPASS" | chpasswd
 
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
 
 timedatectl set-timezone $TIMEZONE
 timedatectl set-ntp true

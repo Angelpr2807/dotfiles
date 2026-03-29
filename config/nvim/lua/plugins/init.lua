@@ -68,9 +68,9 @@ return {
     --
     {
         "nvim-treesitter/nvim-treesitter",
-        build = ":TSUpdate",
-        event = "VeryLazy",
-        main = "nvim-treesitter.configs",
+        event = { "BufReadPost", "BufNewFile" },
+        cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
+        build = ":TSUpdate | TSInstallAll",
         opts = {
             ensure_installed = {
                 "lua",
