@@ -26,16 +26,17 @@ trap_error "\n\t[!] You don't have internet access. Check your connection\n"
 if [[ "$DISTRO" = "arch" ]]; then
     sudo pacman -Sy --needed archlinux-keyring
 
-    sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli eza xss-lock joplin-beta                                                                                                                                                                                                                                                          
+    sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli eza xss-lock 
+
     trap_error "\n\t[!] Warning: Error in package installing"
 elif [[ "$DISTRO" = "debian" ]]; then
-    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh eza xss-lock npm
+    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh eza xss-lock npm docker docker-compose docker-buildx
 fi
 
 if [[ "$DISTRO" = "arch" ]]; then
     if [[ "$DRIVERS" = "nvidia" ]]; then
         # Nvidia
-        sudo pacman -S nvidia nvidia-settings nvidia-utils
+        sudo pacman -S nvidia-open nvidia-settings nvidia-utils
         trap_error "\n\t[!] Warning: Error in gpu driver installing"
     elif [[ "$DRIVERS" = "amd" ]]; then
         # AMD
