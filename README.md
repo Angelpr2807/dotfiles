@@ -5,8 +5,8 @@ This is my personal configuration for BSPWM, and I have two variants.
 1. Normal - rice: A nice desktop and minimal workflow setup. It's based on gh0stzk's dotfiles with slight modifications to the z0mbi3 and cristina themes to work with my own configurations and settings.
 
 ![Zombie Desktop with terms image](./media/rice-1.png)
-![Zombie Desktop with app image](./media/rice-1.png)
-![Zombie clean Desktop image](./media/rice-1.png)
+![Zombie Desktop with app image](./media/rice-2.png)
+![Zombie clean Desktop image](./media/rice-3.png)
 
 z0mbi3 theme :)
 
