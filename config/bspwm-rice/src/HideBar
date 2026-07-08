@@ -39,11 +39,10 @@ get_paddings() {
 
 set_padding() {
     local focused_monitor=$(bspc query -M -m focused --names)
-
-    bspc --monitor "$focused_monitor" config top_padding "$1"
-    bspc --monitor "$focused_monitor" config bottom_padding "$2"
-    bspc --monitor "$focused_monitor" config left_padding "$3"
-    bspc --monitor "$focused_monitor" config right_padding "$4"
+    bspc monitor "$focused_monitor" config top_padding "$1"
+    bspc monitor "$focused_monitor" config bottom_padding "$2"
+    bspc monitor "$focused_monitor" config left_padding "$3"
+    bspc monitor "$focused_monitor" config right_padding "$4"
 }
 
 is_eww_theme() {
@@ -60,12 +59,14 @@ toggle_bar() {
         if [ "$action" = "hide" ]; then
             eww -c "$eww_bar_path" close "$focused_monitor"
         else
-            local monitors=($(xrandr --listmonitors | awk 'NR>1 {print $4}'))
-            local count=0
-            for m in "${monitors[@]}"; do
-                eww -c "$eww_bar_path" open bar --id "$m" --arg monitor="$m" --screen $count
-                ((count++))
-            done
+            local focused_monitor=$(bspc query -M -m focused --names)
+            local screen=$(xrandr --listmonitors |
+                awk -v mon="$focused_monitor" '$4==mon {gsub(":","",$1); print $1}')
+
+            eww -c "$eww_bar_path" open bar \
+                --id "$focused_monitor" \
+                --arg monitor="$focused_monitor" \
+                --screen "$screen"
         fi
     else
         polybar-msg cmd "$action"

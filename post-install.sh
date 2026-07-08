@@ -4,7 +4,7 @@ VM=false
 BSPWM="rice"         # Select between "rice" and "hack" -> Rice is variant of gh0stzk, hack is similar to s4vitar bspwm.
 BLACK=true           # Pentest packages (true or false).
 DISTRO="arch"        # Only arch y debian based distros supported.
-DRIVERS="nvidia"     # "nvidia, amd or none". (lspci -v | grep -A10 VGA)
+DRIVERS="none"     # "nvidia, amd or none". (lspci -v | grep -A10 VGA)
 
 ctrl_c() {
     echo -e "\n\t[!] Ctrl+C detected, stopping the script."

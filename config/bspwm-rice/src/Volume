@@ -61,9 +61,9 @@ toggle_mute() {
 
 # Handle options
 case $1 in
-    --get)  get_volume ;;
-    --inc)  adjust_volume -i 5 ;;
-    --dec)  adjust_volume -d 5 ;;
-    --toggle) toggle_mute ;;
+    get)  get_volume ;;
+    inc)  adjust_volume -i 5 ;;
+    dec)  adjust_volume -d 5 ;;
+    toggle) toggle_mute ;;
     *)      echo "$(get_volume)%" ;;
 esac

@@ -29,33 +29,8 @@ super + Delete
 super + u
     google-chrome-stable &> /dev/null & disown
 
-XF86AudioRaiseVolume
-    pactl set-sink-volume @DEFAULT_SINK@ +5%
-
-XF86AudioLowerVolume
-    pactl set-sink-volume @DEFAULT_SINK@ -5%
-
-XF86AudioMute
-	$HOME/.config/bspwm/src/scripts/mute.sh
-
 ctrl + Tab
     $HOME/.config/bspwm/src/scripts/toggle_layout.sh
-
-# Play/Pause
-XF86AudioPlay
-    mpc toggle
-
-# Stop (opcional)
-XF86AudioStop
-    mpc stop
-
-# Siguiente canción
-XF86AudioNext
-    mpc next
-
-# Canción anterior
-XF86AudioPrev
-    mpc prev
 
 #|||----- System Keybindings -----|||#
 
@@ -112,16 +87,20 @@ super + ctrl + {x,o}
 #	ScreenShoTer --active
 
 # Manage brightness
-#XF86MonBrightness{Up,Down}
-#    sh Brightness {up,down}
+XF86MonBrightness{Up,Down}
+    sh Brightness {up,down}
 
 # Volume control
 XF86Audio{RaiseVolume,LowerVolume,Mute}
-	Volume{ --inc, --dec, --toggle}
+    sh Volume {inc,dec,toggle}
 
 # Music Control
 XF86Audio{Next,Prev,Play,Stop}
-	MediaControl {--next,--previous,--toggle,--stop}
+	sh MediaControl {--next,--previous,--toggle,--stop}
+
+# Microphone controll
+XF86AudioMicMute
+    sh MicroControl toggle
 
 
 #|||----- Bspwm hotkeys -----|||#
