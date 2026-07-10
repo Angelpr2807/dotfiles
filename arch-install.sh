@@ -1,20 +1,44 @@
 #!/bin/bash
 
-if [[ "$#" -ne 1 ]]; then
-    echo -e "\n[!] Necesitas proveer el disco para realizar la instalación.";
-    echo -e "\tUso: $0 <disco>\n";
-    exit 1;
-fi
+check_disk_param() {
+    local params=("$@")
+    local isvalid=false
+    for param in ${params[@]}; do
+        if [[ "$param" = "-d" ]]; then
+            isvalid=true
+            break
+        fi
+    done
+    echo "$isvalid"
+}
 
-# Variables
-DISK="$1"          # lsblk -a
-LAPTOP=false             # special instalation for laptops
-SWAP=false               # Enable swap
-LANG="en_US.UTF-8"       # /etc/locale.gen
-KEYMAP="dvorak"	         # list keymaps with "localectl list-keymaps"
-NAME="arch"              # Hostname
-TIMEZONE="America/Lima"  # list zones with "timedatectl list-zones"
-CIFRATE_DISK=false        # cifrate grub and disk.
+check_disk_not_null() {
+    if [ ! -e $1 ]; then
+        echo -e "[!] Error: Ingrese un disco válido."
+        exit 1
+    fi
+}
+
+check_param_is_valid() {
+    if [[ $(echo $1 | grep -P "^\-.+") ]]; then
+        echo "[!] Error: El parámetro \"-$2\" requiere un valor valido.";
+        show_ussage_message
+        exit 1
+    fi
+}
+
+show_ussage_message() {
+    echo -e "\nUso: $0 -d <disk> [OPTIONS]\n";
+    echo -e "Options:\n";
+    echo -e "-d <disk>      : Disco a usar para instalar arch linux";
+    echo -e "-s <size>      : Crear y habilitar una partición swap en MiB (Deshabilitada por defecto)";
+    echo -e "-l             : Instalar paquetes necesarios para controladores de laptops (Deshabilitada por defecto)";
+    echo -e "-L <lang>      : Idioma y configuración regional (en_US.UTF-8) por defecto - Lista disponible en \"/etc/locale.gen\"";
+    echo -e "-k <keymap>    : Distribución del teclado (la-latin1 por defecto) - \"lista: localectl list-keymaps\"";
+    echo -e "-n <hostname>  : Nombre del dispositivo (arch por defecto)";
+    echo -e "-t <timezone>  : Zona horaria (America/Lima por defecto) - \"lista: timedatectl list-timezones\"";
+    echo -e "-h             : Muestra este mensaje.";
+}
 
 # Function for confirm a password for a user
 ask_password() {
@@ -29,6 +53,84 @@ ask_password() {
 
     echo "$pass"
 }
+
+if [[ "$#" -lt 2 || $(check_disk_param $@) = "false" ]]; then
+    echo -e "[!] Necesitas como mínimo proveer el disco para realizar la instalación.";
+    show_ussage_message
+    exit 1;
+fi
+
+# Variables
+DISK=""                  # lsblk -a
+LAPTOP=false             # special instalation for laptops
+SWAP=false               # Enable swap
+SWAPSIZE=8192            # Default swap size in MiB
+LANG="en_US.UTF-8"       # /etc/locale.gen
+KEYMAP="la-latin1"       # list keymaps with "localectl list-keymaps"
+NAME="arch"              # Hostname
+TIMEZONE="America/Lima"  # list zones with "timedatectl list-zones"
+
+while getopts ":d:s:lL:k:n:t:h" opts; do
+    case $opts in
+        d) 
+            check_param_is_valid $OPTARG "d"
+            check_disk_not_null $OPTARG
+            DISK="$OPTARG"
+            ;;
+        s) 
+            check_param_is_valid $OPTARG "s"
+            if [[ ! $OPTARG =~ ^[0-9]+$ ]]; then
+                echo "[!] Error: El tamaño del swap debe ser numérico en MiB."
+                exit 1
+            fi
+            SWAP=true;
+            SWAPSIZE="$OPTARG";
+        ;;
+        l) LAPTOP=true; ;;
+        L)  
+            check_param_is_valid $OPTARG "L"
+            if [[ $(grep -P "^#?[a-z]+_[A-Z]+(@[a-z]+|\.[A-Z]+\-\d)?" /etc/locale.gen | cut -d "#" -f 2 | cut -d " " -f 1 | grep "$OPTARG" | wc -l ) -ne 1 ]]; then
+                echo "[!] Error: El idioma de configuración no es válido."
+                echo -e "\nPuedes listarlos con 'grep -P \"^#?[a-z]+_[A-Z]+(@[a-z]+|\.[A-Z]+\-\d)?\" /etc/locale.gen | cut -d \"#\" -f 2 | cut -d \" \" -f 1'"
+                exit 1
+            fi
+            LANG="$OPTARG" ;;
+        k) 
+            check_param_is_valid $OPTARG "k"
+            if [[ $(localectl list-keymaps | grep -P "^${OPTARG}$" | wc -l) -ne 1 ]]; then
+                echo "[!] error: La distribución de teclado no es válida, puedes listarlas con \"localectl list-keymaps\"."
+                exit 1
+            fi
+            KEYMAP="$OPTARG"
+            ;;
+        n) 
+            check_param_is_valid $OPTARG "n"
+            NAME="$OPTARG"
+            ;;
+        t) 
+            check_param_is_valid $OPTARG "t"
+            if [[ $(timedatectl list-timezones | grep -P "^${OPTARG}$" | wc -l) -ne 1 ]]; then
+                echo "[!] error: La zona horaria no es válida, puedes listarlas con \"timedatectl list-timezones\"."
+                exit 1
+            fi
+            TIMEZONE="$OPTARG"
+            ;;
+        h) 
+            show_ussage_message 
+            exit 1
+            ;;
+        \?)
+            echo -e "[!] Error: Parámetro \"-$OPTARG\" no es valido";
+            show_ussage_message
+            exit 1
+            ;;
+        :)
+            echo -e "La opción -$OPTARG requiere su valor asociado."
+            show_ussage_message
+            exit 1
+            ;;
+    esac
+done
 
 # Comprobar si el sistema usa UEFI
 EFI=""
@@ -66,8 +168,8 @@ if [[ "$SWAP" = false ]];then
     ROOT_START="513MiB"
     ROOT_END="100%"
 else
-    parted -s "$DISK" mkpart primary linux-swap 513MiB 8075MiB
-    ROOT_START="8075MiB"
+    parted -s "$DISK" mkpart primary linux-swap 513MiB "${SWAPSIZE}MiB"
+    ROOT_START="${SWAPSIZE}MiB"
     ROOT_END="100%"
 fi
 
@@ -150,22 +252,8 @@ genfstab -U /mnt > /mnt/etc/fstab
 
 # --------------- Chroot y configuración ---------------
 arch-chroot /mnt << EOF
-
-if [[ "$CIFRATE_DISK" = true ]]; then
-    uuid=$(blkid -s UUID -o value "${DISK}${ROOT_PART}")
-    grub_default="/etc/default/grub"
-    mkinit_file="/etc/mkinitcpio.conf"
-
-    if [[ grep -q 'GRUB_CMDLINE_LINUX=' "$grub_default" ]]; then
-        sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$uuid:cryptroot root=/dev/mapper/cryptroot\"|" "$grub_default"
-    else
-        echo "GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$uuid:cryptroot root=/dev/mapper/cryptroot\"" >> "$grub_default"
-    fi
-    sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems)/' "$mkinit_file"
-fi
-
 sed -i 's/^#\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
-#echo "LANG=$LANG" > /etc/locale.conf
+echo "LANG=$LANG" > /etc/locale.conf
 locale-gen
 
 cat <<HOSTS > /etc/hosts
@@ -190,20 +278,10 @@ sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/def
 timedatectl set-timezone $TIMEZONE
 timedatectl set-ntp true
 
-if [[ "$CIFRATE_DISK" = true ]]; then
-    mkinitcpio -P
-fi
-
 if [[ "$EFI" = "/efi" ]]; then
-    grub-install --efi-directory=/boot/efi --bootloader-id=GRUB --removable
+    grub-install --efi-directory=/boot/efi --bootloader-id=GRUB
 else
     grub-install "$DISK"
-fi
-
-if [[ "$CIFRATE_DISK" = true ]]; then
-    PASS_HASH=$(echo -e "$GRUB_PASS\n$GRUB_PASS" | grub-mkpasswd-pbkdf2 | grep 'grub.pbkdf2' | awk '{print $NF}')
-    echo "set superusers=\"root\"" | sudo tee -a /etc/grub.d/40_custom
-    echo "password_pbkdf2 root $PASS_HASH" | sudo tee -a /etc/grub.d/40_custom
 fi
 
 grub-mkconfig -o /boot/grub/grub.cfg
