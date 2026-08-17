@@ -31,12 +31,13 @@ show_ussage_message() {
     echo -e "\nUso: $0 -d <disk> [OPTIONS]\n";
     echo -e "Options:\n";
     echo -e "-d <disk>      : Disco a usar para instalar arch linux";
-    echo -e "-s <size>      : Crear y habilitar una partición swap en MiB (Deshabilitada por defecto)";
-    echo -e "-l             : Instalar paquetes necesarios para controladores de laptops (Deshabilitada por defecto)";
-    echo -e "-L <lang>      : Idioma y configuración regional (en_US.UTF-8) por defecto - Lista disponible en \"/etc/locale.gen\"";
-    echo -e "-k <keymap>    : Distribución del teclado (la-latin1 por defecto) - \"lista: localectl list-keymaps\"";
-    echo -e "-n <hostname>  : Nombre del dispositivo (arch por defecto)";
-    echo -e "-t <timezone>  : Zona horaria (America/Lima por defecto) - \"lista: timedatectl list-timezones\"";
+    echo -e "-s <size>      : Crear y habilitar una partición swap en MiB (Deshabilitada por defecto).";
+    echo -e "-l             : Instalar paquetes necesarios para controladores de laptops (Deshabilitada por defecto).";
+    echo -e "-L <lang>      : Idioma y configuración regional (en_US.UTF-8) por defecto - Lista disponible en \"/etc/locale.gen\".";
+    echo -e "-k <keymap>    : Distribución del teclado (la-latin1 por defecto) - \"lista: localectl list-keymaps\".";
+    echo -e "-n <hostname>  : Nombre del dispositivo (arch por defecto).";
+    echo -e "-t <timezone>  : Zona horaria (America/Lima por defecto) - \"lista: timedatectl list-timezones\".";
+    echo -e "-D             : Remover anteriores grubs - Deshabilitado por defecto.";
     echo -e "-h             : Muestra este mensaje.";
 }
 
@@ -69,6 +70,7 @@ LANG="en_US.UTF-8"       # /etc/locale.gen
 KEYMAP="la-latin1"       # list keymaps with "localectl list-keymaps"
 NAME="arch"              # Hostname
 TIMEZONE="America/Lima"  # list zones with "timedatectl list-zones"
+DELETE=false             # remove all grubs
 
 while getopts ":d:s:lL:k:n:t:h" opts; do
     case $opts in
@@ -115,6 +117,7 @@ while getopts ":d:s:lL:k:n:t:h" opts; do
             fi
             TIMEZONE="$OPTARG"
             ;;
+        m)  MULTIBOOT=true ;;
         h) 
             show_ussage_message 
             exit 1
@@ -139,15 +142,6 @@ TYPE="msdos"
 if [[ -d /sys/firmware/efi ]]; then
     EFI="/efi"
     TYPE="gpt"
-fi
-
-# cifrate disk and grub
-GRUB_PASS=""
-
-if [[ "$CIFRATE_DISK" = true ]]; then
-    echo -e "\n################################################\n"
-    echo -e "[!] Encrypting grub, please provide a password...\n"
-    GRUB_PASS=$(ask_password "GRUB") 
 fi
 
 # --------------- Particiones ---------------
@@ -178,13 +172,6 @@ parted -s "$DISK" mkpart primary ext4 "$ROOT_START" "$ROOT_END"
 DISK_SUBPART=$(echo "$DISK" | awk -F "/" '{ print $NF }')            # /dev/DISK_SUBPART
 PARTITIONS=($(lsblk "$DISK" | grep -oP "${DISK_SUBPART}[\w\d]+" | sort ))      # sdx1 sdx2 por ejemplo
 
-if [[ "$CIFRATE_DISK" = true ]]; then
-    echo -e "\n################################################\n"
-    echo -e "[!] Encrypting disk, please provide a password...\n"
-    cryptsetup luksFormat "${ROOT_PART}"
-    cryptsetup open "${ROOT_PART}" cryptroot
-fi
-
 BOOT_PART="/dev/${PARTITIONS[0]}"
 
 if [[ "$SWAP" = false ]];then
@@ -197,19 +184,10 @@ fi
 # --------------- Formateo ---------------
 mkfs.vfat -F32 "${BOOT_PART}"  # Formatear EFI
 
-if [[ "$CIFRATE_DISK" = true ]]; then
-    echo -e "\n################################################\n" 
-    cryptsetup luksFormat "${ROOT_PART}" 
-    cryptsetup open "${ROOT_PART}" cryptroot
-    mkfs.ext4 /dev/mapper/cryptroot
-fi
-
 if [[ "$SWAP" = true ]]; then
     mkswap "${SWAP_PART}"     
 else
-    if [[ "$CIFRATE_DISK" = false ]]; then
-        mkfs.ext4 "${ROOT_PART}"
-    fi
+    mkfs.ext4 "${ROOT_PART}"
 fi
 
 # --------------- Montaje ---------------
@@ -217,18 +195,15 @@ if [[ "$SWAP" = true ]]; then
     swapon "${SWAP_PART}"
 fi
 
-if [[ "$CIFRATE_DISK" = true ]]; then
-    mount /dev/mapper/cryptroot /mnt
-else
-	echo "No se esta encriptando"
-    mount "${ROOT_PART}" /mnt
-fi
+echo "Montando /mnt en $ROOT_PART"
+mount "${ROOT_PART}" /mnt && echo "Se montó correctamente /mnt en $ROOT_PART"
 
+echo "Creando partición /mnt/boot$EFI"
 mkdir -p "/mnt/boot${EFI}"
-mount "${BOOT_PART}" "/mnt/boot${EFI}"
+mount "${BOOT_PART}" "/mnt/boot${EFI}" && echo "Se montó correctamente /mnt/boot$EFI en $BOOT_PART"
 
 # --------------- Instalación del sistema ---------------
-pacstrap /mnt base base-devel os-prober networkmanager grub gvfs linux linux-firmware nano vim cryptsetup ${EFI:+efibootmgr}
+pacstrap /mnt base base-devel os-prober networkmanager grub gvfs gvfs-mtp linux linux-firmware nano git vim cryptsetup ${EFI:+efibootmgr}
 
 # Para laptops
 if [[ "$LAPTOP" = true ]]; then
@@ -273,13 +248,15 @@ useradd -m -G wheel -s /bin/bash "$USERNAME"
 echo "$USERNAME:$USERPASS" | chpasswd
 
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
-sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+if [[ $DELETE = true ]]; then    
+    sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+fi
 
 timedatectl set-timezone $TIMEZONE
 timedatectl set-ntp true
 
 if [[ "$EFI" = "/efi" ]]; then
-    grub-install --efi-directory=/boot/efi --bootloader-id=GRUB
+    grub-install --efi-directory=/boot/efi --bootloader-id=GRUB ${DELETE:+--removable}
 else
     grub-install "$DISK"
 fi

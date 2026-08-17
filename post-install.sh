@@ -3,8 +3,8 @@
 show_ussage_message() {
     echo -e "\nUso: $0 [OPTIONS]\n";
     echo -e "Options:\n";
-    echo -e "-d <desktop>  : Interfaz de usuario, rice o hack (valor por defecto: rice, no funciona en debian :'), solo hack).";
-    echo -e "-b            : Agregar paquetes y repos para pentesting.";
+    echo -e "-d <desktop>  : Interfaz de usuario, rice o hack (valor por defecto: rice, no funciona en debian, solo hack).";
+    echo -e "-b            : Agregar paquetes y repos para pentesting (solo arch).";
     echo -e "-D <distro>   : Distribución de linux (arch por defecto), arch o debian.";
     echo -e "-g <drivers>  : Instalar drivers de gpu, nvidia o amd, por defecto es none (ningún driver).";
     echo -e "-v            : Instalar paquetes para compatibilidad si realizas una instalación para máquina virtual.";
@@ -71,14 +71,6 @@ if [[ $DISTRO = "debian" && $BSPWM = "rice" ]]; then
     echo -e "[!] Lo sentimos, la UI desktop de \"rice\" solo está disponible para arch linux, lo sentimos :'c ";
     exit 1
 fi
-
-echo "$VM"
-echo "$BSPWM"
-echo "$BLACK"
-echo "$DISTRO"
-echo "$DRIVERS"
-
-exit 0
 
 ctrl_c() {
     echo -e "\n\t[!] Ctrl+C detected, stopping the script."
@@ -221,7 +213,7 @@ if [[ "$BSPWM" = "hack" ]]; then
     mv ~/.zshrc-hack ~/.zshrc
     rm ~/.zshrc-rice
     mkdir -p ~/Pictures/walls
-    mv bspwm-hack/walls/* ~/Pictures/walls
+    cp bspwm-hack/walls/* ~/Pictures/walls
     cp -r bspwm-hack/* ~/.config/
     rm -f ~/.config/polybar/config
     cp -r nvim/lua/* ~/.config/nvim/lua/
@@ -229,6 +221,7 @@ if [[ "$BSPWM" = "hack" ]]; then
     sudo curl -X GET https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh -o /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
     sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
+    sudo firecfg
 
     if [[ "$DISTRO" = "arch" ]]; then
         sudo pacman -S --needed base-devel
@@ -260,7 +253,7 @@ cd ./specials
 if [[ "$DISTRO" = "arch" ]]; then
     sudo cp ./ly/config.ini /etc/ly
 fi
-sudo mv ./icons/* /usr/share/icons
+sudo cp ./icons/* /usr/share/icons
 cd /usr/share/icons
 sudo tar -xvf Zafiro-Icons-Dark.tar.xz
 
