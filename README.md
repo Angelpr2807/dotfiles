@@ -2,27 +2,14 @@
 
 This is my personal configuration for BSPWM, and I have two variants.
 
-1. Normal - rice: A nice desktop and minimal workflow setup. It's based on gh0stzk's dotfiles with slight modifications to the z0mbi3 and cristina themes to work with my own configurations and settings.
-
-![Zombie Desktop with terms image](./media/rice-1.png)
-![Zombie Desktop with app image](./media/rice-2.png)
-![Zombie clean Desktop image](./media/rice-3.png)
-
-z0mbi3 theme :)
-
-2. Black - minimal: Custom desktop and scripts for hacking and installing blackarch packages for penetration testing.
-
-Preview - Not available (Comming soon)
-
-You can configure these files however you like. I'll post pictures of these variants soon.
+Caelestia: A nice desktop and minimal workflow setup. It's based on caelestia shell with slight modifications to the keybinds and visual content.
 
 There are two executable options: arch-install.sh and post-install.sh. The first one simply allows you to run a script for a clean install of Arch Linux, just by setting a few variables and giving it execution permissions. The post-installation file contains my configurations for bspwm, neovim, ranger, kitty, etc.
 
 ## Characteristics
 
 - Display manager: [ly](https://github.com/fairyglade/ly).
-- Window manager: [bswm](https://github.com/baskerville/bspwm).
-- Program launcher: [rofi](https://github.com/adi1090x/rofi).
+- Window manager: [hyprland](https://hypr.land/).
 - Terminal: [Kitty](https://github.com/kovidgoyal/kitty).
 
 ### Terminal Plugins
@@ -35,12 +22,3 @@ There are two executable options: arch-install.sh and post-install.sh. The first
 ### Editor
 
 I use the neovim text editor with [NvChad](https://nvchad.com/) settings. I modified the files a bit to fit my workflow, but you can edit it to not use those settings in the `post-install.sh` file.
-
-## New Features
-
-I added the ability to encrypt GRUB and disk with the "encrypt disk" parameter; these options will be separated later. Directory errors were also fixed in post-install for the "rice" and "hack" dotfiles. Additionally, in "post-install," the ability to choose your dedicated GPU drivers, whether NVIDIA or AMD, has been added.
-
-> [!Warning]
-> For virtual machines, both modes have issues with the Picom settings. I haven't been able to find a solution, so in this case, simply removing the rounded edges and opacity works for me.
->
-> Commit "e3540c359" belongs to an older version of rice bspwm, so it doesn't work very well and breaks. Use the current version if you want or make a pull request to improve the customization of dotfiles.

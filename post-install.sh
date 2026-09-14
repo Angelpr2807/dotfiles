@@ -3,11 +3,9 @@
 show_ussage_message() {
     echo -e "\nUso: $0 [OPTIONS]\n";
     echo -e "Options:\n";
-    echo -e "-d <desktop>  : Interfaz de usuario, rice o hack (valor por defecto: rice, no funciona en debian, solo hack).";
     echo -e "-b            : Agregar paquetes y repos para pentesting (solo arch).";
     echo -e "-D <distro>   : Distribución de linux (arch por defecto), arch o debian.";
     echo -e "-g <drivers>  : Instalar drivers de gpu, nvidia o amd, por defecto es none (ningún driver).";
-    echo -e "-v            : Instalar paquetes para compatibilidad si realizas una instalación para máquina virtual.";
     echo -e "-h            : Muestra este mensaje.";
 }
 
@@ -20,31 +18,13 @@ check_param_is_valid() {
 }
 
 VM=false
-BSPWM="rice"     # Select between "rice" and "hack" -> Rice is variant of gh0stzk, hack is similar to s4vitar bspwm.
 BLACK=false      # Pentest packages (true or false).
-DISTRO="arch"    # Only arch y debian based distros supported.
 DRIVERS="none"   # "nvidia, amd or none". (lspci -v | grep -A10 VGA)
 
 while getopts ":d:bvD:g:h" opts; do
     case $opts in
-        d)
-            check_param_is_valid $OPTARG "d"
-            if [[ $OPTARG != "rice" && $OPTARG != "hack" ]]; then
-                echo "[!] error: La interfaz de escritorio no es válida, las opciones disponibles son 'rice' o 'hack'."
-                exit 1
-            fi
-            BSPWM="$OPTARG"
-            ;;
         b) BLACK=true ;;
         v) VM=true ;;
-        D)
-            check_param_is_valid $OPTARG "D"
-            if [[ $OPTARG != "arch" && $OPTARG != "debian" ]]; then
-                echo "[!] error: La distribución de linux no es válida, las opciones disponibles son 'arch' o 'debian', sirve para las distros basadas en estas."
-                exit 1
-            fi
-            DISTRO="$OPTARG"
-            ;;
         g)
             check_param_is_valid $OPTARG "g"
             if [[ $OPTARG != "nvidia" && $OPTARG != "amd" && $OPTARG != "none" ]]; then
@@ -67,11 +47,6 @@ while getopts ":d:bvD:g:h" opts; do
     esac
 done
 
-if [[ $DISTRO = "debian" && $BSPWM = "rice" ]]; then
-    echo -e "[!] Lo sentimos, la UI desktop de \"rice\" solo está disponible para arch linux, lo sentimos :'c ";
-    exit 1
-fi
-
 ctrl_c() {
     echo -e "\n\t[!] Ctrl+C detected, stopping the script."
     exit 2
@@ -89,15 +64,23 @@ trap ctrl_c INT
 ping -c 1 google.com &> /dev/null 
 trap_error "\n\t[!] You don't have internet access. Check your connection\n"
 
-if [[ "$DISTRO" = "arch" ]]; then
-    sudo pacman -Sy --needed archlinux-keyring
+sudo pacman -Sy --needed archlinux-keyring
 
-    sudo pacman -S --needed git neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs gparted openssh polybar bspwm sxhkd wget unzip 7zip gzip firejail go ruby npm github-cli eza xss-lock 
+sudo pacman -S --needed hyprland neovim ly xterm kitty firefox rofi feh ttf-dejavu ttf-liberation noto-fonts pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg xorg-xinit thunar ranger glib2 gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate python-pillow gvfs-mtp mtpfs picom tumbler xorg-xrandr pkgfile whois vim exfatprogs openssh wget unzip 7zip gzip firejail go ruby npm github-cli eza glibc gcc-libs ddcutil brightnessctl lm_sensors aubio libpipewire libqalculate power-profiles-daemon ttf-material-symbols-variable ttf-rubik-vf ttf-cascadia-code-nerd qt6-base qt6-declarative qt6-imageformats swappy fish bash cmake ninja qt6-shaderdots fastfetch
 
-    trap_error "\n\t[!] Warning: Error in package installing"
-elif [[ "$DISTRO" = "debian" ]]; then
-    sudo apt install git neovim xterm kitty rofi feh pulseaudio pavucontrol pamixer udiskie ntfs-3g xorg thunar ranger gvfs lxappearance qt5ct geeqie vlc zsh lsd bat papirus-icon-theme flameshot xclip man tree imagemagick dunst locate gvfs mtp-tools picom tumbler arandr whois vim exfatprogs gparted polybar bspwm sxhkd wget unzip 7zip gzip firejail golang ruby nodejs gh eza xss-lock npm docker docker-compose docker-buildx
-fi
+trap_error "\n\t[!] Warning: Error in package installing"
+
+mkdir ~/Downloads
+cd ~/Downloads
+git clone https://aur.archlinux.org/paru.git
+cd paru
+makepkg -si
+
+trap_error "\n\t[!] Warning: Error in AUR helper installing"
+
+paru -S caelestia-cli quickshell-git libcava qt6-m3shapes-git
+
+trap_error "\n\t[!] Warning: Error in package installing"
 
 if [[ "$DISTRO" = "arch" ]]; then
     if [[ "$DRIVERS" = "nvidia" ]]; then
@@ -111,12 +94,9 @@ if [[ "$DISTRO" = "arch" ]]; then
     fi
 fi
 
-if [[ "$VM" = true && "$DISTRO" = "arch" ]]; then
+if [[ "$VM" = true ]]; then
     # Packages needed for VM
     sudo pacman -S wmname virtualbox-guest-utils arandr
-    trap_error "\n\t[!] Warning: Error in vm packages installing"
-elif [[ "$VM" = true && "$DISTRO" = "debian" ]]; then
-    sudo apt install suckless-tools virtualbox-guest-utils arandr
     trap_error "\n\t[!] Warning: Error in vm packages installing"
 fi
 
@@ -134,7 +114,7 @@ if [[ "$DISTRO" = "arch" ]]; then
 fi
 
 # Themes for GUI
-echo -e "QT_QPA_PLATFORMTHEME=qt5ct\nGTK_THEME=Adwaita:dark" | sudo tee /etc/environment
+# echo -e "QT_QPA_PLATFORMTHEME=qt5ct\nGTK_THEME=Adwaita:dark" | sudo tee /etc/environment
 
 mkdir -p ~/.config
 mkdir -p ~/Desktop
@@ -155,7 +135,7 @@ sudo git clone https://github.com/zsh-users/zsh-autosuggestions "${PLUGINS}/zsh-
 sudo git clone https://github.com/zsh-users/zsh-history-substring-search.git "${PLUGINS}/zsh-history-substring-search"
 sudo git clone https://github.com/zsh-users/zsh-history-substring-search.git "${PLUGINS}/zsh-history-substring-search"
 sudo git clone https://github.com/Aloxaf/fzf-tab.git "${PLUGINS}/fzf-tab-git"
-sudo git clone --depth 1 https://github.com/junegunn/fzf.git "${PLUGINS}/.fzf"
+sudo git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf" && yes | ~/.fzf/install
 
 # Download fonts and icons
 cd ~/Downloads/dotfiles/config/specials/fonts
@@ -173,15 +153,18 @@ sudo rm *.zip
 cd ~/Downloads/
 
 if [[ "$VM" = false && "$DISTRO" = "arch" ]]; then
-    # grub watch dogs
-    git clone --depth 1 https://github.com/VandalByte/dedsec-grub2-theme.git && cd dedsec-grub2-theme
-    sudo python3 dedsec-theme.py --install
+    # grub theme from
+    # https://github.com/Jacksaur/Gorgeous-GRUB.git
+    # I use CyberGRUB-2077
+    git clone https://github.com/adnksharp/CyberGRUB-2077
+    cd CyberGRUB-2077
+    sudo $SHELL ./install.sh
 fi
 
 cd
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-if [[ "$BLACK" = true && "$DISTRO" = "arch" ]]; then	
+if [[ "$BLACK" = true ]]; then	
     cd ~/Desktop/
     mkdir -p repos/blackarch
     cd ~/Desktop/repos/blackarch
@@ -193,7 +176,7 @@ if [[ "$BLACK" = true && "$DISTRO" = "arch" ]]; then
     sudo pacman -Sy
 fi
 
-if [[ "$BLACK" = true && "$DISTRO" = "arch" ]]; then	
+if [[ "$BLACK" = true ]]; then	
     # Pentesting packages
     sudo pacman -S --needed zsh-completions ltrace metasploit ruby-erb gobuster wireshark-cli caido whatweb nmap exploitdb hydra bind recon-ng hash-identifier hashcat macchanger jq impacket netexec ffuf responder mitm6 pth-toolkit python-ldapdomaindump smbclient evil-winrm mimikatz bloodhound neo4j-community socat upx gdb proxychains-ng mariadb rustscan
     trap_error "\n\t[!] Warning: Error in pentesting packages installing"
@@ -207,55 +190,19 @@ if [[ "$BLACK" = true && "$DISTRO" = "arch" ]]; then
     cd john/src && ./configure && make
 fi
 
-if [[ "$BSPWM" = "hack" ]]; then   
-    cd ~/Downloads/dotfiles/config
-    cp .* ~/
-    mv ~/.zshrc-hack ~/.zshrc
-    rm ~/.zshrc-rice
-    mkdir -p ~/Pictures/walls
-    cp bspwm-hack/walls/* ~/Pictures/walls
-    cp -r bspwm-hack/* ~/.config/
-    rm -f ~/.config/polybar/config
-    cp -r nvim/lua/* ~/.config/nvim/lua/
-    sudo mkdir /usr/share/zsh/plugins/zsh-sudo
-    sudo curl -X GET https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/sudo/sudo.plugin.zsh -o /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
-    sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
-    sudo firecfg
-
-    if [[ "$DISTRO" = "arch" ]]; then
-        sudo pacman -S --needed base-devel
-        git clone https://aur.archlinux.org/paru.git
-        cd paru
-        makepkg -si
-        sudo paru -S caido unifetch
-    fi
-else
-    cd
-    curl -LO https://raw.githubusercontent.com/gh0stzk/dotfiles/master/RiceInstaller
-    chmod +x RiceInstaller
-    ./RiceInstaller &&
-    cd ~/Downloads/dotfiles/config
-    cp .* ~/
-    mv ~/.zshrc-rice ~/.zshrc
-    rm ~/.zshrc-hack
-    cp -r nvim/lua/* ~/.config/nvim/lua/
-    mkdir -p ~/.config/bspwm
-    cp -r bspwm-rice/* ~/.config/bspwm
-fi
-
+# Caelestia
+caelestia install
+cd ~/Downloads/dotfiles/config
+cp .* ~/
+mv .zshrc ~/.zshrc
+cp -r nvim/lua ~/.config/nvim/
 cd ~/.config
-rm -rf kitty unifetch ranger rofi && cd ~/Downloads/dotfiles/config
-cp -r kitty unifetch ranger rofi ~/.config
+cd ~/Downloads/dotfiles/config
+cp -r kitty fastfetch ranger caelestia ~/.config
 
 cd ./specials 
 # Special files
-if [[ "$DISTRO" = "arch" ]]; then
-    sudo cp ./ly/config.ini /etc/ly
-fi
-sudo cp ./icons/* /usr/share/icons
-cd /usr/share/icons
-sudo tar -xvf Zafiro-Icons-Dark.tar.xz
+sudo cp ./ly/config.ini /etc/ly
 
 # NvChad installation
 sudo rm -rf /root/.config/nvim
